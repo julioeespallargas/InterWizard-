@@ -1,0 +1,902 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Job Interview Simulator · Simulation Wizard</title>
+<link rel="icon" href="assets/simulation-wizard-logo.png">
+<style>
+@font-face{font-family:'Barlow';font-weight:400;font-style:normal;font-display:swap;src:url(assets/fonts/barlow-latin-400-normal.woff2) format('woff2')}
+@font-face{font-family:'Barlow';font-weight:600;font-style:normal;font-display:swap;src:url(assets/fonts/barlow-latin-600-normal.woff2) format('woff2')}
+@font-face{font-family:'Barlow';font-weight:700;font-style:normal;font-display:swap;src:url(assets/fonts/barlow-latin-700-normal.woff2) format('woff2')}
+@font-face{font-family:'Barlow Semi Condensed';font-weight:600;font-style:normal;font-display:swap;src:url(assets/fonts/barlow-semi-condensed-latin-600-normal.woff2) format('woff2')}
+@font-face{font-family:'Barlow Semi Condensed';font-weight:700;font-style:normal;font-display:swap;src:url(assets/fonts/barlow-semi-condensed-latin-700-normal.woff2) format('woff2')}
+</style>
+<meta name="description" content="Concept prototype of a job interview rehearsal service for Simulation Wizard. Laurea UAS Service Design project.">
+<style>
+:root{
+  --black:#000; --ink:#2C3439; --mute:#667078; --line:#E2E7EA; --paper:#fff; --mist:#EEF7FB; --fog:#F5F7F8;
+  --cyan:#00AEEF; --cyan-ink:#00719A; --sky:#86CEF4; --ember:#E8590C; --ember-ink:#A93F06; --ember-mist:#FDEFE6; --leaf:#167A4E; --leaf-mist:#E7F5EE;
+  --disp:'Barlow Semi Condensed','Arial Narrow',Arial,sans-serif; --body:'Barlow',Arial,sans-serif;
+  --r-xl:28px; --r-m:16px; --r-s:10px;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.5;-webkit-font-smoothing:antialiased}
+h1,h2,h3{font-family:var(--disp);color:var(--black);margin:0;font-weight:600;letter-spacing:-.015em;line-height:1.02}
+h1{font-size:clamp(40px,5.4vw,68px)}
+h2{font-size:30px}
+h3{font-size:21px}
+p{margin:0}
+button,input,textarea{font-family:inherit;font-size:16px;color:inherit}
+:focus-visible{outline:3px solid var(--cyan);outline-offset:3px}
+[hidden]{display:none!important}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+
+/* Header */
+.top{background:rgba(255,255,255,.94);backdrop-filter:blur(8px);position:sticky;top:0;z-index:20;border-bottom:1px solid var(--line)}
+.top-in{max-width:1180px;margin:0 auto;padding:8px 28px;display:flex;align-items:center;gap:24px}
+.brand{display:flex;align-items:center;gap:14px;background:none;border:0;padding:0;cursor:pointer}
+.brand img{width:52px;height:52px;display:block}
+.brand span{font-family:var(--disp);font-weight:600;font-size:19px;color:var(--black);white-space:nowrap}
+.nav{display:flex;gap:2px;margin-left:auto}
+.nav button{position:relative;display:flex;align-items:center;gap:8px;background:none;border:0;padding:20px 14px;color:var(--mute);font-weight:600;font-size:15px;cursor:pointer;white-space:nowrap}
+.nav button:hover{color:var(--black)}
+.nav button[aria-current="page"]{color:var(--black)}
+.nav button[aria-current="page"]::after{content:"";position:absolute;left:14px;right:14px;bottom:-1px;height:3px;border-radius:3px 3px 0 0;background:var(--cyan)}
+.langs{display:flex;gap:2px}
+.langs button{border:0;background:none;padding:6px 7px;font-size:13px;font-weight:700;color:#9AA3A9;cursor:pointer;letter-spacing:.02em}
+.langs button[aria-pressed="true"]{color:var(--black);text-decoration:underline;text-decoration-color:var(--cyan);text-decoration-thickness:3px;text-underline-offset:6px}
+.me{width:40px;height:40px;border-radius:50%;background:var(--black);color:#fff;border:0;font-weight:700;font-size:14px;cursor:pointer;flex-shrink:0}
+.ml{margin-left:auto}
+
+/* Layout */
+.page{max-width:1180px;margin:0 auto;padding:56px 28px 96px}
+.stack{display:flex;flex-direction:column}
+.g-s{gap:8px}.g-m{gap:16px}.g-l{gap:28px}.g-xl{gap:64px}
+.row{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.between{justify-content:space-between}
+.mute{color:var(--mute)}
+.small{font-size:14px}
+.lead{font-size:19px;color:var(--ink);max-width:56ch}
+.section-h{display:flex;align-items:baseline;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:22px}
+
+/* Buttons */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;min-height:52px;padding:0 28px;border-radius:999px;border:2px solid transparent;font-weight:700;font-size:16px;cursor:pointer;white-space:nowrap;transition:background .15s}
+.btn-p{background:var(--cyan);color:var(--black)}
+.btn-p:hover{background:#33C0F3}
+.btn-k{background:var(--black);color:#fff}
+.btn-k:hover{background:#262B2F}
+.btn-o{background:transparent;color:var(--black);border-color:var(--black)}
+.btn-o:hover{background:var(--fog)}
+.btn[disabled]{opacity:.4;cursor:not-allowed}
+.link{background:none;border:0;padding:0;color:var(--cyan-ink);font-weight:700;cursor:pointer;font-size:15px;text-decoration:underline;text-underline-offset:4px;text-decoration-thickness:1px}
+.back{display:inline-flex;align-items:center;gap:8px;background:none;border:0;padding:0;color:var(--mute);font-weight:600;cursor:pointer;margin-bottom:28px}
+.back:hover{color:var(--black)}
+
+/* Fields & controls */
+.field{display:flex;flex-direction:column;gap:8px}
+.field label{font-size:14px;font-weight:600;color:var(--black)}
+.field input,.field textarea{min-height:52px;border:1.5px solid #CBD3D8;border-radius:var(--r-s);padding:12px 16px;background:#fff;color:var(--black)}
+.field textarea{min-height:96px;resize:vertical}
+.field input:focus,.field textarea:focus{border-color:var(--black);outline:none}
+.seg{display:flex;flex-wrap:wrap;gap:8px}
+.seg button{border:1.5px solid #CBD3D8;background:#fff;border-radius:999px;min-height:44px;padding:0 18px;font-weight:600;color:var(--ink);cursor:pointer;display:flex;align-items:center;gap:6px}
+.seg button:hover{border-color:var(--black)}
+.seg button[aria-pressed="true"]{background:var(--black);border-color:var(--black);color:#fff}
+.seg button[disabled]{opacity:.45;cursor:not-allowed;border-style:dashed}
+.tag{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:6px;font-size:13px;font-weight:600;background:var(--fog);color:var(--ink);white-space:nowrap}
+.tag.c{background:var(--mist);color:var(--cyan-ink)}
+.tag.e{background:var(--ember-mist);color:var(--ember-ink)}
+.tag.l{background:var(--leaf-mist);color:var(--leaf)}
+
+/* Landing */
+.land{max-width:1180px;margin:0 auto;padding:40px 28px 80px;display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,.9fr);gap:64px;align-items:start;position:relative}
+.land .intro{padding-top:24px;display:flex;flex-direction:column;gap:28px;position:relative}
+.land .intro .bigmark{width:132px;height:132px}
+.land h1{max-width:13ch}
+.why{list-style:none;margin:18px 0 0;padding:28px 0 0;border-top:1px solid var(--line);display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:28px 36px}
+.why li{display:flex;flex-direction:column;gap:6px}
+.why b{font-family:var(--disp);font-weight:600;font-size:20px;color:var(--black);line-height:1.15}
+.why span{color:var(--mute);font-size:15px}
+.why svg{color:var(--cyan-ink);margin-bottom:4px}
+.authbox{background:var(--fog);border-radius:var(--r-xl);padding:36px;display:flex;flex-direction:column;gap:18px;position:sticky;top:96px}
+.tabs{display:flex;gap:24px;border-bottom:1px solid var(--line)}
+.tabs button{background:none;border:0;padding:0 0 12px;font-family:var(--disp);font-size:22px;font-weight:600;color:#9AA3A9;cursor:pointer;position:relative}
+.tabs button[aria-selected="true"]{color:var(--black)}
+.tabs button[aria-selected="true"]::after{content:"";position:absolute;left:0;right:0;bottom:-1px;height:3px;background:var(--cyan);border-radius:3px}
+.or{display:flex;align-items:center;gap:12px;color:var(--mute);font-size:14px}
+.or::before,.or::after{content:"";flex:1;height:1px;background:#D7DEE2}
+
+/* Plans */
+.plans{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));border:1.5px solid var(--black);border-radius:var(--r-xl);overflow:hidden}
+.plan{padding:36px 32px;display:flex;flex-direction:column;gap:20px;position:relative}
+.plan + .plan{border-left:1.5px solid var(--black)}
+.plan.hi{background:var(--black);color:#fff}
+.plan.hi h3,.plan.hi .price{color:#fff}
+.plan .price{font-family:var(--disp);font-weight:700;font-size:60px;line-height:.9;color:var(--black)}
+.plan .per{font-size:15px;color:var(--mute)}
+.plan.hi .per{color:#AEB8BE}
+.plan ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px;flex:1}
+.plan li{display:flex;gap:10px;align-items:flex-start}
+.plan li svg{flex-shrink:0;margin-top:3px;color:var(--cyan)}
+.plan .flag{position:absolute;top:20px;right:20px}
+.vrline{display:flex;flex-wrap:wrap;gap:20px;align-items:center;padding:24px 0;border-bottom:1px solid var(--line)}
+
+/* Sector tiles */
+.tiles{display:grid;gap:10px;grid-template-columns:repeat(auto-fill,minmax(160px,1fr))}
+.tile{border:1.5px solid var(--line);background:#fff;border-radius:var(--r-m);padding:16px;display:flex;align-items:center;gap:12px;cursor:pointer;text-align:left;font-weight:600;color:var(--black);min-height:64px;font-size:15px;line-height:1.25}
+.tile svg{flex-shrink:0;color:var(--cyan-ink)}
+.tile:hover{border-color:#AEB8BE}
+.tile[aria-pressed="true"]{border-color:var(--black);background:var(--black);color:#fff}
+.tile[aria-pressed="true"] svg{color:var(--cyan)}
+.chipbtn{border:1.5px solid var(--line);background:#fff;border-radius:999px;min-height:40px;padding:0 16px;font-weight:600;color:var(--ink);cursor:pointer;font-size:15px}
+.chipbtn[aria-pressed="true"]{border-color:var(--cyan-ink);background:var(--mist);color:var(--cyan-ink)}
+
+/* Today */
+.count{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:48px;align-items:center;padding-bottom:56px;border-bottom:1px solid var(--line)}
+.days{font-family:var(--disp);font-weight:700;color:var(--black);font-size:clamp(96px,14vw,184px);line-height:.8;letter-spacing:-.04em}
+.days small{font-size:.32em;letter-spacing:-.01em;margin-left:.12em;font-weight:600}
+.count .what{font-size:22px;color:var(--ink);margin-top:20px;max-width:38ch;line-height:1.3}
+.count .what b{color:var(--black);font-weight:600}
+.ready{display:flex;align-items:center;gap:28px}
+.legend{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:14px}
+.legend li{display:grid;grid-template-columns:14px auto;column-gap:10px;align-items:center}
+.legend i{width:14px;height:14px;border-radius:50%}
+.legend b{font-family:var(--disp);font-size:26px;color:var(--black);font-weight:600;line-height:1}
+.legend span{grid-column:2;font-size:14px;color:var(--mute)}
+.arcs circle.v{transition:stroke-dasharray .4s}
+.draw circle.v{animation:draw 1.1s cubic-bezier(.2,.7,.2,1) both}
+.draw circle.v:nth-of-type(4){animation-delay:.12s}.draw circle.v:nth-of-type(6){animation-delay:.24s}
+@keyframes draw{from{stroke-dasharray:0 2000}}
+@media (prefers-reduced-motion:reduce){.draw circle.v{animation:none}}
+
+.rehearse{background:var(--black);color:#fff;border-radius:var(--r-xl);padding:48px;display:grid;grid-template-columns:minmax(0,1fr) 280px;gap:40px;align-items:center;position:relative;overflow:hidden}
+.rehearse h2{color:#fff;font-size:44px}
+.rehearse .k{color:#AEB8BE;font-size:15px}
+.rehearse dl{display:grid;grid-template-columns:auto 1fr;gap:10px 20px;margin:22px 0 0;font-size:17px;max-width:560px}
+.rehearse dt{color:#AEB8BE}
+.rehearse dd{margin:0;color:#fff}
+.rehearse .acts{display:flex;flex-wrap:wrap;gap:12px;margin-top:32px}
+.rehearse .acts .btn-o{color:#fff;border-color:#4A5459}
+.rehearse .acts .btn-o:hover{background:#1A1F22}
+.rehearse svg.deco{width:280px;height:280px;display:block}
+
+.timeline{list-style:none;margin:0;padding:0;display:grid;grid-auto-flow:column;grid-auto-columns:minmax(128px,1fr);overflow-x:auto;padding-bottom:6px}
+.timeline li{position:relative;padding:34px 12px 0 0;display:flex;flex-direction:column;gap:4px}
+.timeline li::before{content:"";position:absolute;top:10px;left:0;right:0;height:2px;background:var(--line)}
+.timeline li.done::before{background:var(--black)}
+.timeline .pt{position:absolute;top:0;left:0;width:22px;height:22px;border-radius:50%;background:#fff;border:2px solid #C3CBD0;display:flex;align-items:center;justify-content:center;color:#fff}
+.timeline li.done .pt{background:var(--black);border-color:var(--black)}
+.timeline li.next .pt{border-color:var(--cyan);border-width:6px}
+.timeline li.day .pt{background:var(--black);border:6px solid var(--cyan);width:26px;height:26px;top:-2px;left:-2px}
+.timeline .d{font-size:13px;color:var(--mute);font-weight:600}
+.timeline b{font-family:var(--disp);font-size:17px;font-weight:600;color:var(--black);line-height:1.15}
+.timeline li.next b{color:var(--cyan-ink)}
+
+.two{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:56px}
+.drow{display:grid;grid-template-columns:44px minmax(0,1fr) auto;gap:16px;align-items:center;padding:16px 0;border-top:1px solid var(--line);background:none;border-left:0;border-right:0;border-bottom:0;width:100%;text-align:left;cursor:pointer;color:inherit}
+.drow:last-child{border-bottom:1px solid var(--line)}
+.drow:hover b{color:var(--cyan-ink)}
+.drow .ico{width:44px;height:44px;border-radius:12px;background:var(--fog);display:flex;align-items:center;justify-content:center;color:var(--black)}
+.drow b{font-family:var(--disp);font-size:19px;font-weight:600;color:var(--black);display:block;line-height:1.2}
+.drow .sc{font-family:var(--disp);font-size:30px;font-weight:600;color:var(--black)}
+
+/* Scenarios */
+.sclayout{display:grid;grid-template-columns:minmax(0,1fr) 380px;gap:48px;align-items:start}
+.sclist{display:flex;flex-direction:column}
+.scn{display:grid;grid-template-columns:52px minmax(0,1fr) auto;gap:20px;align-items:start;padding:22px 20px;border-radius:var(--r-m);background:none;border:1.5px solid transparent;cursor:pointer;text-align:left;width:100%;color:inherit}
+.scn + .scn{margin-top:4px}
+.scn:hover{background:var(--fog)}
+.scn[aria-pressed="true"]{border-color:var(--black);background:#fff}
+.scn .ico{width:52px;height:52px;border-radius:14px;background:var(--mist);color:var(--cyan-ink);display:flex;align-items:center;justify-content:center}
+.scn[aria-pressed="true"] .ico{background:var(--black);color:var(--cyan)}
+.scn b{font-family:var(--disp);font-size:22px;font-weight:600;color:var(--black);display:block;line-height:1.15;margin-bottom:6px}
+.scn p{font-size:15px;color:var(--mute)}
+.scn p em{font-style:normal;color:var(--ink)}
+.scn[disabled]{cursor:not-allowed;opacity:.55}
+.scn[disabled]:hover{background:none}
+.scn .meta{display:flex;flex-direction:column;align-items:flex-end;gap:6px;font-size:14px;color:var(--mute);white-space:nowrap}
+.setup{position:sticky;top:96px;background:var(--fog);border-radius:var(--r-xl);padding:32px;display:flex;flex-direction:column;gap:24px}
+.setup h3{font-size:24px}
+.setup .lbl{font-weight:600;color:var(--black);font-size:15px;margin-bottom:10px;display:block}
+
+/* Brief & room */
+.brief{display:grid;grid-template-columns:minmax(0,1fr) 400px;gap:56px;align-items:start}
+.facts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0;border-top:1.5px solid var(--black);margin-top:40px}
+.facts > div{padding:20px 20px 0 0}
+.facts > div + div{padding-left:20px;border-left:1px solid var(--line)}
+.facts .k{font-size:14px;color:var(--mute);margin-bottom:6px}
+.facts p{font-family:var(--disp);font-size:21px;font-weight:600;color:var(--black);line-height:1.2}
+.scale{display:flex;flex-direction:column;gap:12px}
+.scale input[type=range]{width:100%;accent-color:var(--ember);height:28px}
+.scale .val{font-family:var(--disp);font-size:64px;font-weight:700;line-height:.9;color:var(--black)}
+.scale .ends{display:flex;justify-content:space-between;font-size:13px;color:var(--mute)}
+.calmnote{display:flex;gap:12px;align-items:flex-start;font-size:15px;color:var(--ink);padding-top:18px;border-top:1px solid #D7DEE2}
+.calmnote svg{flex-shrink:0;color:var(--leaf);margin-top:2px}
+.stage{border-radius:var(--r-xl);background:var(--black);min-height:420px;display:grid;grid-template-columns:2fr 1fr;overflow:hidden;margin-top:32px}
+.stage > div{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;color:#AEB8BE;padding:32px;text-align:center}
+.stage > div + div{background:#15191B}
+.stage b{color:#fff;font-family:var(--disp);font-size:22px;font-weight:600}
+.avatar{width:120px;height:120px;border-radius:50%;background:var(--cyan);display:flex;align-items:center;justify-content:center;font-family:var(--disp);font-weight:700;font-size:40px;color:var(--black)}
+.notice{display:flex;flex-wrap:wrap;gap:20px;align-items:center;justify-content:space-between;margin-top:24px;padding:22px 26px;border-radius:var(--r-m);background:var(--fog)}
+
+/* Debrief */
+.dhead{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:32px;align-items:end;padding-bottom:40px;border-bottom:1.5px solid var(--black)}
+.phase{display:grid;grid-template-columns:72px minmax(0,1fr);gap:24px;padding:44px 0;border-bottom:1px solid var(--line)}
+.phase .n{font-family:var(--disp);font-weight:700;font-size:48px;line-height:.85;color:var(--cyan)}
+.phase h2{margin-bottom:24px}
+.react{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:48px;align-items:start}
+.nscale{position:relative;height:66px;margin-top:34px}
+.nscale .track{position:absolute;left:0;right:0;top:28px;height:4px;border-radius:4px;background:var(--line)}
+.nscale .span{position:absolute;top:28px;height:4px;background:linear-gradient(90deg,var(--cyan),var(--ember))}
+.nscale .dot{position:absolute;top:16px;width:28px;height:28px;margin-left:-14px;border-radius:50%;border:4px solid #fff;box-shadow:0 0 0 1.5px currentColor;display:flex;align-items:center;justify-content:center}
+.nscale .dot span{position:absolute;top:34px;}
+.nscale .dot.b span{top:-30px}
+.nscale .dot span{font-size:13px;font-weight:600;white-space:nowrap}
+.nscale .ticks{position:absolute;left:0;right:0;top:-2px;display:flex;justify-content:space-between;font-size:12px;color:#9AA3A9}
+.moments{list-style:none;margin:0;padding:0;position:relative}
+.moments::before{content:"";position:absolute;left:47px;top:12px;bottom:12px;width:2px;background:var(--line)}
+.mo{display:grid;grid-template-columns:36px 24px minmax(0,1fr);gap:0 16px;padding:12px 0}
+.mo .tm{font-size:13px;font-weight:600;color:var(--mute);padding-top:3px;font-variant-numeric:tabular-nums}
+.mo .mk{width:24px;height:24px;border-radius:50%;border:3px solid #fff;position:relative;z-index:1;margin-top:1px}
+.mo .mk.strong{background:var(--leaf)}.mo .mk.wobble{background:var(--ember)}.mo .mk.twist{background:var(--cyan)}
+.mo details summary{list-style:none;cursor:pointer;display:flex;flex-wrap:wrap;gap:6px 12px;align-items:baseline}
+.mo details summary::-webkit-details-marker{display:none}
+.mo summary b{font-family:var(--disp);font-size:20px;font-weight:600;color:var(--black);line-height:1.2}
+.mo details[open] summary b{color:var(--cyan-ink)}
+.mo .body{padding:10px 0 6px;display:flex;flex-direction:column;gap:12px;align-items:flex-start}
+.mo .body p{color:var(--ink);max-width:60ch}
+.skills{display:grid;grid-template-columns:auto minmax(0,1fr);gap:40px;align-items:center}
+.sk{display:grid;grid-template-columns:150px minmax(0,1fr) 40px;gap:16px;align-items:center;padding:10px 0}
+.sk span{font-weight:600;color:var(--black)}
+.sk b{font-family:var(--disp);font-size:22px;font-weight:600;color:var(--black);text-align:right}
+.meter{height:10px;border-radius:10px;background:var(--fog);position:relative;overflow:hidden}
+.meter i{position:absolute;inset:0 auto 0 0;border-radius:10px;background:var(--black)}
+.meter i.low{background:var(--ember)}
+.meter s{position:absolute;top:0;bottom:0;width:2px;background:var(--cyan)}
+.kc{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px}
+.kc > div{padding:26px;border-radius:var(--r-m);display:flex;flex-direction:column;gap:10px}
+.kc .keep{background:var(--leaf-mist)}
+.kc .chg{background:var(--ember-mist)}
+.kc .k{font-weight:700;font-size:15px}
+.kc .keep .k{color:var(--leaf)}.kc .chg .k{color:var(--ember-ink)}
+.kc p{font-family:var(--disp);font-size:24px;font-weight:600;color:var(--black);line-height:1.15}
+
+/* Progress */
+.lvlpath{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(5,minmax(0,1fr))}
+.lvlpath li{padding:0 16px 0 0;display:flex;flex-direction:column;gap:6px;position:relative}
+.lvlpath .bar{height:6px;border-radius:6px;background:var(--line);margin-bottom:12px;overflow:hidden}
+.lvlpath .bar i{display:block;height:100%;background:var(--black)}
+.lvlpath .bar.now i{background:var(--cyan)}
+.lvlpath b{font-family:var(--disp);font-size:22px;font-weight:600;color:var(--black);line-height:1.1}
+.lvlpath .n{font-size:14px;color:var(--mute);font-weight:600}
+.lvlpath li.off b{color:#9AA3A9}
+.lvlpath p{font-size:14px;color:var(--mute)}
+.secrow{display:grid;grid-template-columns:28px minmax(0,1fr) 44px;gap:14px;align-items:center;padding:14px 0;border-top:1px solid var(--line)}
+.secrow svg{color:var(--cyan-ink)}
+.secrow .nm{display:flex;flex-direction:column;gap:6px;min-width:0}
+.secrow .nm span{font-weight:600;color:var(--black);display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.secrow b{font-family:var(--disp);font-size:22px;font-weight:600;color:var(--black);text-align:right}
+.badges{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:24px}
+.bdg{display:flex;flex-direction:column;align-items:flex-start;gap:10px;font-size:15px;font-weight:600;color:var(--black);line-height:1.25}
+.bdg i{width:56px;height:56px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:var(--black);color:var(--cyan)}
+.bdg.off{color:#9AA3A9}
+.bdg.off i{background:var(--fog);color:#B5BDC2}
+
+/* Profile */
+.prof{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:56px;align-items:start}
+.side{background:var(--fog);border-radius:var(--r-xl);padding:30px;display:flex;flex-direction:column;gap:16px}
+
+.foot{border-top:1px solid var(--line)}
+.foot-in{max-width:1180px;margin:0 auto;padding:20px 28px;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;font-size:13px;color:var(--mute)}
+.toast{position:fixed;left:50%;bottom:32px;transform:translateX(-50%);background:var(--black);color:#fff;padding:14px 22px;border-radius:999px;font-weight:600;z-index:40;display:flex;gap:10px;align-items:center}
+.toast svg{color:var(--cyan)}
+
+@media (max-width:980px){
+  .land,.sclayout,.brief,.prof{grid-template-columns:1fr}
+  .authbox,.setup{position:static}
+  .plans{grid-template-columns:1fr}
+  .plan + .plan{border-left:0;border-top:1.5px solid var(--black)}
+  .count{grid-template-columns:1fr}
+  .two{grid-template-columns:1fr;gap:48px}
+  .react,.skills{grid-template-columns:1fr}
+}
+@media (max-width:720px){
+  .top{backdrop-filter:none;background:#fff}
+  body{padding-bottom:72px}
+  .top-in{padding:6px 16px;gap:12px}
+  .brand img{width:44px;height:44px}
+  .brand span{display:none}
+  .nav{position:fixed;left:0;right:0;bottom:0;background:#fff;border-top:1px solid var(--line);justify-content:space-around;margin:0;padding:0 4px env(safe-area-inset-bottom);z-index:30}
+  .nav button{flex-direction:column;gap:3px;padding:10px 4px 12px;font-size:12px;flex:1}
+  .nav button[aria-current="page"]::after{top:-1px;bottom:auto;left:28%;right:28%;border-radius:0 0 3px 3px}
+  .langs{margin-left:auto}
+  .page{padding:32px 16px 64px}
+  .land{padding:24px 16px 56px;gap:40px}
+  .land .intro .bigmark{width:96px;height:96px}
+  .why{grid-template-columns:1fr}
+  .authbox,.setup,.side{padding:24px}
+  .rehearse{grid-template-columns:1fr;padding:28px}
+  .rehearse h2{font-size:34px}
+  .rehearse svg.deco{display:none}
+  .ready{flex-direction:column;align-items:flex-start}
+  .facts{grid-template-columns:1fr}
+  .facts > div + div{padding-left:0;border-left:0;border-top:1px solid var(--line)}
+  .facts > div{padding:16px 0}
+  .stage{grid-template-columns:1fr;min-height:0}
+  .dhead{grid-template-columns:1fr}
+  .phase{grid-template-columns:1fr;gap:12px;padding:32px 0}
+  .kc{grid-template-columns:1fr}
+  .sk{grid-template-columns:110px minmax(0,1fr) 34px}
+  .lvlpath{grid-template-columns:1fr;gap:18px}
+  .scn{grid-template-columns:44px minmax(0,1fr);padding:18px 12px}
+  .scn .ico{width:44px;height:44px}
+  .scn .meta{grid-column:2;flex-direction:row;align-items:center}
+  .toast{bottom:86px}
+}
+</style>
+</head>
+<body>
+<header class="top" id="top"></header>
+<main id="app"></main>
+<footer class="foot"><div class="foot-in"><span id="footnote"></span><button class="link small" data-act="reset" id="resetbtn"></button></div></footer>
+<div id="toast" class="toast" role="status" hidden></div>
+
+<script>
+const LOGO="assets/simulation-wizard-logo.png";
+
+/* ============ i18n ============ */
+const T={
+en:{product:"Job Interview Simulator",today:"Today",scenarios:"Scenarios",debriefs:"Debriefs",progress:"Progress",profile:"Profile",
+ h1:"Rehearse your job interview before it happens.",sub:"Realistic interview situations, and a guided debrief after each one. Designed by simulation educators.",
+ w1t:"Situations, not question lists",w1d:"A quiet manager, a language switch, the salary question.",
+ w2t:"A debrief after every rehearsal",w2d:"Reflect, see what happened, and try the hard moment again.",
+ w3t:"Made for interviews in Finland",w3d:"Finnish, Swedish and English, and the switch between them.",
+ w4t:"Counts down to your real interview",w4d:"Add the date and get a short plan for each day.",
+ createAccount:"Create account",login:"Log in",name:"Name",email:"Email",password:"Password",or:"or",guest:"Continue as guest",
+ plansTitle:"Pay for the interview you have, not a subscription you forget.",
+ free:"First rehearsal",freePer:"no card needed",f1:"One scenario",f2:"Full debrief",freeBtn:"Try for free",
+ sprint:"Interview sprint",sprintPer:"once, for 14 days",s1:"All scenarios",s2:"Plan up to your interview date",s3:"Unlimited debriefs",sprintFlag:"Best before an interview",sprintBtn:"Start sprint",
+ monthly:"Ongoing",monthlyPer:"per month",m1:"Everything in the sprint",m2:"For a longer job search",m3:"Cancel any time",monthlyBtn:"Choose ongoing",
+ vr:"VR / 360 rooms",vrSub:"Rehearse in a 360° interview room with a headset. Optional add-on.",vrAdd:"Add VR / 360",vrRemove:"Remove VR / 360",premium:"Premium",
+ setupTitle:"When is your interview?",setupSub:"Your rehearsal plan is built around this date.",position:"Position",positionPh:"e.g. Marketing Assistant",company:"Company",companyPh:"e.g. Nordic Foods Oy",date:"Interview date",sector:"Your sector",buildPlan:"Build my plan",noDate:"I don’t have a date yet",
+ d0:"Today",d1:"day",dn:"days",until:"until your interview",asAt:"{r} at {c}",noDateT:"No interview date yet",noDateD:"Add one and the plan counts down with you.",addDate:"Add a date",
+ rPlan:"of the plan done",rSkills:"skills score",rCalm:"calm after rehearsing",
+ todayR:"Today’s rehearsal",youMeet:"You meet",twist:"The twist",length:"Length",startR:"Start rehearsal",other:"Choose another",
+ yourPlan:"Your plan",interview:"Interview",nervesT:"Nerves before and after",nervesNote:"After rehearsing, your nerves have dropped from {a} to {b} out of 10.",before:"Before",after:"After",latest:"Latest debriefs",seeAll:"See all",
+ scTitle:"Scenarios",scSub:"Each scenario has a person, a goal and a twist. Pick one and set the pressure.",min:"{n} min",unlockAt:"Level {n}",done:"Rehearsed",
+ setupR:"Rehearsal setup",pressure:"Pressure",calm:"Calm",real:"Realistic",tough:"Tough",language:"Interview language",mode:"Room",webcam:"Webcam",bonus:"+{n} XP",sectorTask:"Tasks come from your sector: {s}",change:"Change",toBrief:"Continue to briefing",
+ briefT:"Before you go in",goal:"Your goal",goalDefault:"Stay calm and give one concrete example in every answer.",nervesNow:"How nervous are you right now?",relaxed:"Relaxed",veryN:"Very nervous",safe:"Nothing is shared with anyone. Mistakes are part of the rehearsal.",enter:"Enter the room",
+ ai:"AI interviewer",room:"360° interview room",cam:"Your camera",headset:"VR headset",soon:"Coming soon",notActive:"The live interview is not switched on in this prototype.",finish:"Finish and see the debrief",
+ p1:"How did it feel?",p2:"What happened",p3:"What it shows",p4:"Next time",feelNow:"How nervous do you feel now?",hardest:"What felt hardest?",hardestPh:"One sentence, just for you",
+ strong:"Went well",wobble:"Wobble",tw:"Twist",rehearseMoment:"Rehearse this moment",overall:"overall",prevMark:"previous",vsPrev:"vs previous",keep:"Keep doing",try:"Try differently",again:"Rehearse again",nextPlan:"Next in your plan",tapMoment:"Open a moment to read the note.",
+ debT:"Debriefs",all:"All",
+ levels:"Levels",xpTo:"{x} XP to {n}",top:"Top level reached",skills:"Skills",sinceStart:"since first rehearsal",sectors:"Sectors",current:"Current",previous:"Previous",badges:"Badges",rehearsals:"rehearsals",
+ logout:"Log out",curSector:"Current sector",prevSectors:"Previous sectors",save:"Save",plan:"Plan",plans:"Change plan",vrState:"VR / 360 {s}",on:"on",off:"off",defLang:"Default interview language",
+ foot:"Concept prototype for Simulation Wizard. Laurea UAS Service Design project. Example data only.",reset:"Reset demo",
+ tPlan:"{p} started",tSaved:"Saved",tReset:"Demo reset",tLevel:"Level up: {n}",tVrOn:"VR / 360 added",tVrOff:"VR / 360 removed",guestName:"Guest",lvl:"Level"},
+fi:{product:"Työhaastattelusimulaattori",today:"Tänään",scenarios:"Skenaariot",debriefs:"Jälkipuinnit",progress:"Edistyminen",profile:"Profiili",
+ h1:"Harjoittele työhaastattelu ennen kuin se tapahtuu.",sub:"Realistisia haastattelutilanteita ja ohjattu jälkipuinti jokaisen jälkeen. Simulaatio-opettajien suunnittelema.",
+ w1t:"Tilanteita, ei kysymyslistoja",w1d:"Hiljainen esihenkilö, kielenvaihto, palkkatoive.",
+ w2t:"Jälkipuinti jokaisen harjoituksen jälkeen",w2d:"Pohdi, näe mitä tapahtui ja kokeile vaikeaa hetkeä uudelleen.",
+ w3t:"Tehty suomalaisiin haastatteluihin",w3d:"Suomi, ruotsi ja englanti sekä vaihto niiden välillä.",
+ w4t:"Laskee päiviä oikeaan haastatteluun",w4d:"Lisää päivämäärä ja saat lyhyen suunnitelman jokaiselle päivälle.",
+ createAccount:"Luo tili",login:"Kirjaudu",name:"Nimi",email:"Sähköposti",password:"Salasana",or:"tai",guest:"Jatka vieraana",
+ plansTitle:"Maksa edessä olevasta haastattelusta, ei unohtuvasta tilauksesta.",
+ free:"Ensimmäinen harjoitus",freePer:"ei korttia",f1:"Yksi skenaario",f2:"Täysi jälkipuinti",freeBtn:"Kokeile ilmaiseksi",
+ sprint:"Haastattelusprintti",sprintPer:"kertamaksu, 14 päivää",s1:"Kaikki skenaariot",s2:"Suunnitelma haastattelupäivään asti",s3:"Rajattomasti jälkipuinteja",sprintFlag:"Paras ennen haastattelua",sprintBtn:"Aloita sprintti",
+ monthly:"Jatkuva",monthlyPer:"kuukaudessa",m1:"Kaikki sprintin sisältö",m2:"Pidempään työnhakuun",m3:"Peru milloin tahansa",monthlyBtn:"Valitse jatkuva",
+ vr:"VR / 360 -huoneet",vrSub:"Harjoittele 360° haastatteluhuoneessa VR-laseilla. Valinnainen lisäosa.",vrAdd:"Lisää VR / 360",vrRemove:"Poista VR / 360",premium:"Premium",
+ setupTitle:"Milloin haastattelusi on?",setupSub:"Harjoitussuunnitelma rakennetaan tämän päivän ympärille.",position:"Tehtävä",positionPh:"esim. markkinointiassistentti",company:"Yritys",companyPh:"esim. Nordic Foods Oy",date:"Haastattelupäivä",sector:"Alasi",buildPlan:"Rakenna suunnitelma",noDate:"Minulla ei ole vielä päivää",
+ d0:"Tänään",d1:"päivä",dn:"päivää",until:"haastatteluusi",asAt:"{r}, {c}",noDateT:"Ei vielä haastattelupäivää",noDateD:"Lisää päivä, niin suunnitelma laskee kanssasi.",addDate:"Lisää päivä",
+ rPlan:"suunnitelmasta tehty",rSkills:"taitojen tulos",rCalm:"rauhallisuus harjoituksen jälkeen",
+ todayR:"Tämän päivän harjoitus",youMeet:"Tapaat",twist:"Yllätys",length:"Kesto",startR:"Aloita harjoitus",other:"Valitse toinen",
+ yourPlan:"Suunnitelmasi",interview:"Haastattelu",nervesT:"Jännitys ennen ja jälkeen",nervesNote:"Harjoituksen jälkeen jännityksesi on laskenut {a} → {b} (asteikko 10).",before:"Ennen",after:"Jälkeen",latest:"Viimeisimmät jälkipuinnit",seeAll:"Näytä kaikki",
+ scTitle:"Skenaariot",scSub:"Jokaisessa skenaariossa on henkilö, tavoite ja yllätys. Valitse yksi ja säädä paine.",min:"{n} min",unlockAt:"Taso {n}",done:"Harjoiteltu",
+ setupR:"Harjoituksen asetukset",pressure:"Paine",calm:"Rauhallinen",real:"Realistinen",tough:"Tiukka",language:"Haastattelun kieli",mode:"Huone",webcam:"Verkkokamera",bonus:"+{n} XP",sectorTask:"Tehtävät tulevat alaltasi: {s}",change:"Vaihda",toBrief:"Jatka valmisteluun",
+ briefT:"Ennen kuin menet sisään",goal:"Tavoitteesi",goalDefault:"Pysy rauhallisena ja anna konkreettinen esimerkki jokaisessa vastauksessa.",nervesNow:"Kuinka paljon jännittää juuri nyt?",relaxed:"Rento",veryN:"Todella jännittää",safe:"Mitään ei jaeta kenellekään. Virheet kuuluvat harjoitukseen.",enter:"Astu huoneeseen",
+ ai:"Tekoälyhaastattelija",room:"360° haastatteluhuone",cam:"Kamerasi",headset:"VR-lasit",soon:"Tulossa pian",notActive:"Live-haastattelu ei ole päällä tässä prototyypissä.",finish:"Lopeta ja katso jälkipuinti",
+ p1:"Miltä tuntui?",p2:"Mitä tapahtui",p3:"Mitä se kertoo",p4:"Ensi kerralla",feelNow:"Kuinka paljon jännittää nyt?",hardest:"Mikä tuntui vaikeimmalta?",hardestPh:"Yksi lause, vain sinulle",
+ strong:"Onnistui",wobble:"Horjui",tw:"Yllätys",rehearseMoment:"Harjoittele tätä hetkeä",overall:"kokonaisuus",prevMark:"edellinen",vsPrev:"edelliseen",keep:"Jatka näin",try:"Kokeile toisin",again:"Harjoittele uudelleen",nextPlan:"Seuraava suunnitelmassa",tapMoment:"Avaa hetki lukeaksesi huomion.",
+ debT:"Jälkipuinnit",all:"Kaikki",
+ levels:"Tasot",xpTo:"{x} XP tasolle {n}",top:"Ylin taso saavutettu",skills:"Taidot",sinceStart:"ensimmäisestä harjoituksesta",sectors:"Alat",current:"Nykyinen",previous:"Aiempi",badges:"Merkit",rehearsals:"harjoitusta",
+ logout:"Kirjaudu ulos",curSector:"Nykyinen ala",prevSectors:"Aiemmat alat",save:"Tallenna",plan:"Tilaus",plans:"Vaihda tilausta",vrState:"VR / 360 {s}",on:"käytössä",off:"ei käytössä",defLang:"Haastattelun oletuskieli",
+ foot:"Konseptiprototyyppi Simulation Wizardille. Laurea-ammattikorkeakoulun palvelumuotoiluprojekti. Vain esimerkkidataa.",reset:"Nollaa demo",
+ tPlan:"{p} alkoi",tSaved:"Tallennettu",tReset:"Demo nollattu",tLevel:"Uusi taso: {n}",tVrOn:"VR / 360 lisätty",tVrOff:"VR / 360 poistettu",guestName:"Vieras",lvl:"Taso"},
+es:{product:"Simulador de entrevistas",today:"Hoy",scenarios:"Escenarios",debriefs:"Debriefings",progress:"Progreso",profile:"Perfil",
+ h1:"Ensaya tu entrevista de trabajo antes de que llegue.",sub:"Situaciones de entrevista realistas y un debriefing guiado después de cada una. Diseñado por expertos en simulación.",
+ w1t:"Situaciones, no listas de preguntas",w1d:"Una jefa callada, un cambio de idioma, la pregunta del salario.",
+ w2t:"Un debriefing tras cada ensayo",w2d:"Reflexiona, mira qué pasó y repite el momento difícil.",
+ w3t:"Pensado para entrevistas en Finlandia",w3d:"Finés, sueco e inglés, y el cambio entre ellos.",
+ w4t:"Cuenta atrás hasta tu entrevista real",w4d:"Añade la fecha y recibe un plan corto para cada día.",
+ createAccount:"Crear cuenta",login:"Iniciar sesión",name:"Nombre",email:"Correo electrónico",password:"Contraseña",or:"o",guest:"Continuar como invitado",
+ plansTitle:"Paga por la entrevista que tienes, no por una suscripción que olvidas.",
+ free:"Primer ensayo",freePer:"sin tarjeta",f1:"Un escenario",f2:"Debriefing completo",freeBtn:"Probar gratis",
+ sprint:"Sprint de entrevista",sprintPer:"pago único, 14 días",s1:"Todos los escenarios",s2:"Plan hasta el día de tu entrevista",s3:"Debriefings ilimitados",sprintFlag:"Ideal antes de una entrevista",sprintBtn:"Empezar sprint",
+ monthly:"Continuo",monthlyPer:"al mes",m1:"Todo lo del sprint",m2:"Para búsquedas largas",m3:"Cancela cuando quieras",monthlyBtn:"Elegir continuo",
+ vr:"Salas VR / 360",vrSub:"Ensaya en una sala de entrevista 360° con gafas VR. Complemento opcional.",vrAdd:"Añadir VR / 360",vrRemove:"Quitar VR / 360",premium:"Premium",
+ setupTitle:"¿Cuándo es tu entrevista?",setupSub:"Tu plan de ensayos se construye alrededor de esta fecha.",position:"Puesto",positionPh:"p. ej. Asistente de marketing",company:"Empresa",companyPh:"p. ej. Nordic Foods Oy",date:"Fecha de la entrevista",sector:"Tu sector",buildPlan:"Crear mi plan",noDate:"Aún no tengo fecha",
+ d0:"Hoy",d1:"día",dn:"días",until:"para tu entrevista",asAt:"{r} en {c}",noDateT:"Sin fecha de entrevista",noDateD:"Añade una y el plan hará la cuenta atrás contigo.",addDate:"Añadir fecha",
+ rPlan:"del plan hecho",rSkills:"nota de habilidades",rCalm:"calma tras ensayar",
+ todayR:"Ensayo de hoy",youMeet:"Conocerás a",twist:"El giro",length:"Duración",startR:"Empezar ensayo",other:"Elegir otro",
+ yourPlan:"Tu plan",interview:"Entrevista",nervesT:"Nervios antes y después",nervesNote:"Después de ensayar, tus nervios han bajado de {a} a {b} sobre 10.",before:"Antes",after:"Después",latest:"Últimos debriefings",seeAll:"Ver todos",
+ scTitle:"Escenarios",scSub:"Cada escenario tiene una persona, un objetivo y un giro. Elige uno y ajusta la presión.",min:"{n} min",unlockAt:"Nivel {n}",done:"Ensayado",
+ setupR:"Ajustes del ensayo",pressure:"Presión",calm:"Tranquila",real:"Realista",tough:"Dura",language:"Idioma de la entrevista",mode:"Sala",webcam:"Webcam",bonus:"+{n} XP",sectorTask:"Las tareas vienen de tu sector: {s}",change:"Cambiar",toBrief:"Continuar a la preparación",
+ briefT:"Antes de entrar",goal:"Tu objetivo",goalDefault:"Mantén la calma y da un ejemplo concreto en cada respuesta.",nervesNow:"¿Cuántos nervios tienes ahora mismo?",relaxed:"Tranquilo",veryN:"Muy nervioso",safe:"Nada se comparte con nadie. Equivocarse es parte del ensayo.",enter:"Entrar en la sala",
+ ai:"Entrevistador IA",room:"Sala de entrevista 360°",cam:"Tu cámara",headset:"Gafas VR",soon:"Próximamente",notActive:"La entrevista en directo no está activada en este prototipo.",finish:"Terminar y ver el debriefing",
+ p1:"¿Cómo te sentiste?",p2:"Qué pasó",p3:"Qué muestra",p4:"La próxima vez",feelNow:"¿Cuántos nervios tienes ahora?",hardest:"¿Qué fue lo más difícil?",hardestPh:"Una frase, solo para ti",
+ strong:"Bien",wobble:"Dudaste",tw:"Giro",rehearseMoment:"Ensayar este momento",overall:"global",prevMark:"anterior",vsPrev:"vs anterior",keep:"Sigue así",try:"Prueba distinto",again:"Ensayar de nuevo",nextPlan:"Siguiente en tu plan",tapMoment:"Abre un momento para leer la nota.",
+ debT:"Debriefings",all:"Todos",
+ levels:"Niveles",xpTo:"{x} XP para {n}",top:"Nivel máximo alcanzado",skills:"Habilidades",sinceStart:"desde el primer ensayo",sectors:"Sectores",current:"Actual",previous:"Anterior",badges:"Insignias",rehearsals:"ensayos",
+ logout:"Cerrar sesión",curSector:"Sector actual",prevSectors:"Sectores anteriores",save:"Guardar",plan:"Plan",plans:"Cambiar plan",vrState:"VR / 360 {s}",on:"activo",off:"desactivado",defLang:"Idioma de entrevista por defecto",
+ foot:"Prototipo conceptual para Simulation Wizard. Proyecto de Service Design, Laurea UAS. Solo datos de ejemplo.",reset:"Reiniciar demo",
+ tPlan:"{p} activado",tSaved:"Guardado",tReset:"Demo reiniciada",tLevel:"Subes de nivel: {n}",tVrOn:"VR / 360 añadido",tVrOff:"VR / 360 quitado",guestName:"Invitado",lvl:"Nivel"}
+};
+const D={
+ sector:{"Marketing & Communications":["Marketing & Communications","Markkinointi ja viestintä","Marketing y comunicación"],"Sales & Customer Service":["Sales & Customer Service","Myynti ja asiakaspalvelu","Ventas y atención al cliente"],"Hospitality & Tourism":["Hospitality & Tourism","Matkailu ja ravitsemus","Hostelería y turismo"],"Logistics & Transport":["Logistics & Transport","Logistiikka ja kuljetus","Logística y transporte"],"Healthcare & Social Care":["Healthcare & Social Care","Sosiaali- ja terveysala","Sanidad y servicios sociales"],"IT & Software":["IT & Software","IT ja ohjelmistot","IT y software"],"Engineering & Technology":["Engineering & Technology","Tekniikka","Ingeniería y tecnología"],"Education":["Education","Koulutus","Educación"],"Finance & Administration":["Finance & Administration","Talous ja hallinto","Finanzas y administración"],"Retail":["Retail","Vähittäiskauppa","Comercio"]},
+ lang:{English:["English","Englanti","Inglés"],Finnish:["Finnish","Suomi","Finés"],Swedish:["Swedish","Ruotsi","Sueco"],Spanish:["Spanish","Espanja","Español"]},
+ metric:{confidence:["Confidence","Itsevarmuus","Confianza"],clarity:["Clarity","Selkeys","Claridad"],communication:["Communication","Viestintä","Comunicación"],quality:["Answer quality","Vastausten laatu","Calidad de respuesta"]},
+ lvl:{1:["Newcomer","Aloittelija","Novato"],2:["Practiser","Harjoittelija","Aprendiz"],3:["Confident","Varma","Seguro"],4:["Pro","Ammattilainen","Profesional"],5:["Master","Mestari","Maestro"]},
+ unlock:{1:["Calm pressure and three starter scenarios","Rauhallinen paine ja kolme aloitusskenaariota","Presión tranquila y tres escenarios iniciales"],2:["Realistic pressure, salary and language switch","Realistinen paine, palkkatoive ja kielenvaihto","Presión realista, salario y cambio de idioma"],3:["Tough pressure, curveball and panel","Tiukka paine, yllätyskysymys ja paneeli","Presión dura, pregunta trampa y panel"],4:["A scenario from your own job ad","Skenaario omasta työpaikkailmoituksesta","Un escenario a partir de tu oferta"],5:["Rehearsal certificate","Harjoitustodistus","Certificado de ensayos"]},
+ badge:{b1:["First rehearsal","Ensimmäinen harjoitus","Primer ensayo"],b2:["Five rehearsals","Viisi harjoitusta","Cinco ensayos"],b3:["Sat through the silence","Kesti hiljaisuuden","Aguantaste el silencio"],b4:["Switched language","Vaihtoi kieltä","Cambiaste de idioma"],b5:["Score 75+","Tulos 75+","Nota 75+"],b6:["Tough pressure","Tiukka paine","Presión dura"],b7:["Nerves down 3 points","Jännitys −3","Nervios −3 puntos"],b8:["VR explorer","VR-tutkija","Explorador VR"]},
+ kind:{strong:"strong",wobble:"wobble",twist:"tw"}
+};
+const LI={en:0,fi:1,es:2},LOC={en:"en-GB",fi:"fi-FI",es:"es-ES"};
+function t(k,v){let s=(T[S.lang]||T.en)[k];if(s==null)s=T.en[k];if(s==null)s=k;if(v)for(const x in v)s=s.split("{"+x+"}").join(v[x]);return s;}
+const dn=(g,v)=>{const a=D[g][v];return a?a[LI[S.lang]]:v;};
+const L=o=>o?(o[S.lang]||o.en):"";
+
+/* ============ Icons ============ */
+const P={today:'<circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/>',grid:'<rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/>',doc:'<path d="M6 3h9l4 4v14H6z"/><path d="M9 12h7M9 16h5"/>',chart:'<path d="M4 20h16"/><path d="M7 16v-4M12 16V8M17 16v-7"/>',
+ check:'<path d="M5 12.5l4.5 4.5L19 7.5"/>',lock:'<rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/>',play:'<path d="M8 5l11 7-11 7z"/>',back:'<path d="M19 12H5M11 6l-6 6 6 6"/>',repeat:'<path d="M20 12a8 8 0 1 1-2.3-5.7"/><path d="M20 4v5h-5"/>',
+ cam:'<path d="M15 10l5-3v10l-5-3z"/><rect x="2.5" y="6" width="12.5" height="12" rx="2"/>',vr:'<path d="M2.5 8h19v9h-6l-2-3h-3l-2 3h-6z"/>',star:'<path d="M12 3.5l2.6 5.4 5.9.8-4.3 4.1 1 5.8L12 16.8l-5.2 2.8 1-5.8-4.3-4.1 5.9-.8z"/>',fire:'<path d="M12 3c1 4 5 5 5 10a5 5 0 0 1-10 0c0-3 2-4 2-7 2 1 3 3 3 3"/>',heart:'<path d="M12 20s-7.5-4.6-7.5-10.2A4.3 4.3 0 0 1 12 7.4a4.3 4.3 0 0 1 7.5 2.4C19.5 15.4 12 20 12 20z"/>',calendar:'<rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 10h16M9 3v4M15 3v4"/>',
+ chat:'<path d="M4 5h16v11H9l-5 4z"/>',pause:'<path d="M9 6v12M15 6v12"/>',task:'<rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4V3h6v1M9 11l2 2 4-4M9 17h6"/>',euro:'<path d="M17 6.5A6.5 6.5 0 1 0 17 17.5"/><path d="M4.5 10.5h8M4.5 13.5h8"/>',swap:'<path d="M4 8h13l-3-3M20 16H7l3 3"/>',bolt:'<path d="M13 3L5 13h6l-1 8 8-10h-6z"/>',panel:'<circle cx="6" cy="9" r="2.5"/><circle cx="12" cy="7" r="2.5"/><circle cx="18" cy="9" r="2.5"/><path d="M2.5 18c.5-3 2-4.5 3.5-4.5M9 17c.5-3.5 1.5-5.5 3-5.5s2.5 2 3 5.5M21.5 18c-.5-3-2-4.5-3.5-4.5"/>',
+ Marketing:'<path d="M3 10v4h3l7 4V6L6 10z"/><path d="M17 9a4 4 0 0 1 0 6"/>',Sales:'<path d="M3 12V4h8l10 10-8 8z"/><circle cx="7.5" cy="8.5" r="1.5"/>',Hospitality:'<path d="M4 17h16"/><path d="M6 17a6 6 0 0 1 12 0"/><path d="M12 9V7M3 20h18"/>',Logistics:'<path d="M2 6h11v10H2z"/><path d="M13 9h4l4 4v3h-8"/><circle cx="6" cy="18" r="2"/><circle cx="17" cy="18" r="2"/>',Healthcare:'<path d="M12 21s-8-5-8-11a4.5 4.5 0 0 1 8-3 4.5 4.5 0 0 1 8 3c0 6-8 11-8 11z"/><path d="M9 11h6M12 8v6"/>',IT:'<path d="M8 8l-4 4 4 4M16 8l4 4-4 4M14 5l-4 14"/>',Engineering:'<circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M4.9 19.1L7 17M17 7l2.1-2.1"/>',Education:'<path d="M2 9l10-5 10 5-10 5z"/><path d="M6 11v5c3 2 9 2 12 0v-5"/>',Finance:'<path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/>',Retail:'<path d="M5 8h14l-1 13H6z"/><path d="M9 8a3 3 0 0 1 6 0"/>'};
+const ic=(n,s=20,w=2)=>`<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="${w}" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${P[n]||""}</svg>`;
+
+/* ============ Data ============ */
+const SECTORS=[["Marketing","Marketing & Communications"],["Sales","Sales & Customer Service"],["Hospitality","Hospitality & Tourism"],["Logistics","Logistics & Transport"],["Healthcare","Healthcare & Social Care"],["IT","IT & Software"],["Engineering","Engineering & Technology"],["Education","Education"],["Finance","Finance & Administration"],["Retail","Retail"]];
+const sKey=f=>(SECTORS.find(s=>s[1]===f)||["Marketing"])[0];
+const LANGS=["Finnish","Swedish","English","Spanish"];
+const PRESS=[["calm",1,0],["real",2,30],["tough",3,60]];
+const LEVELS=[{n:1,xp:0},{n:2,xp:150},{n:3,xp:400},{n:4,xp:800},{n:5,xp:1400}];
+const MET=["confidence","clarity","communication","quality"];
+const SC=[
+ {id:"first",ic:"chat",lvl:1,min:10,t:{en:"The first conversation",fi:"Ensimmäinen keskustelu",es:"La primera conversación"},who:{en:"A friendly HR recruiter on a video call",fi:"Ystävällinen rekrytoija videopuhelussa",es:"Una reclutadora amable por videollamada"},tw:{en:"Opens with “Tell me about yourself”",fi:"Alkaa kysymyksellä ”Kerro itsestäsi”",es:"Empieza con «Háblame de ti»"}},
+ {id:"quiet",ic:"pause",lvl:1,min:12,t:{en:"The quiet manager",fi:"Hiljainen esihenkilö",es:"La jefa callada"},who:{en:"Your future team lead, a person of few words",fi:"Tuleva tiiminvetäjäsi, vähäsanainen",es:"Tu futura responsable, de pocas palabras"},tw:{en:"Long silences after your answers",fi:"Pitkiä hiljaisuuksia vastaustesi jälkeen",es:"Silencios largos tras tus respuestas"}},
+ {id:"task",ic:"task",lvl:1,min:15,t:{en:"The work sample",fi:"Työnäyte",es:"La prueba práctica"},who:{en:"A team member from your sector",fi:"Tiimin jäsen omalta alaltasi",es:"Alguien del equipo de tu sector"},tw:{en:"A short task you solve out loud",fi:"Lyhyt tehtävä, jonka ratkaiset ääneen",es:"Una tarea corta que resuelves en voz alta"}},
+ {id:"salary",ic:"euro",lvl:2,min:10,t:{en:"The salary question",fi:"Palkkatoive",es:"La pregunta del salario"},who:{en:"An HR manager",fi:"HR-päällikkö",es:"Una responsable de RR. HH."},tw:{en:"Asks your salary expectation, then pushes back",fi:"Kysyy palkkatoiveesi ja neuvottelee",es:"Pregunta tu expectativa salarial y regatea"}},
+ {id:"switch",ic:"swap",lvl:2,min:14,t:{en:"The language switch",fi:"Kielenvaihto",es:"El cambio de idioma"},who:{en:"A manager in an international team",fi:"Esihenkilö kansainvälisessä tiimissä",es:"Un responsable de equipo internacional"},tw:{en:"Starts in Finnish, continues in English",fi:"Alkaa suomeksi, jatkuu englanniksi",es:"Empieza en finés y sigue en inglés"}},
+ {id:"curve",ic:"bolt",lvl:3,min:14,t:{en:"The curveball",fi:"Yllätyskysymys",es:"La pregunta trampa"},who:{en:"A senior manager",fi:"Kokenut johtaja",es:"Un directivo sénior"},tw:{en:"“Tell me about a time you failed”",fi:"”Kerro, milloin epäonnistuit”",es:"«Cuéntame cuándo fracasaste»"}},
+ {id:"panel",ic:"panel",lvl:3,min:20,t:{en:"The panel of three",fi:"Kolmen hengen paneeli",es:"El panel de tres"},who:{en:"HR, the manager and a future colleague",fi:"HR, esihenkilö ja tuleva kollega",es:"RR. HH., la responsable y un futuro compañero"},tw:{en:"Questions come from three directions",fi:"Kysymyksiä tulee kolmesta suunnasta",es:"Las preguntas llegan desde tres lados"}}
+];
+const scById=id=>SC.find(s=>s.id===id)||SC[0];
+const PLAN=["first","quiet","task","salary","switch","curve","panel"];
+
+const m3=(en,fi,es)=>({en,fi,es});
+const iso=d=>d.toISOString().slice(0,10);
+const addDays=n=>{const d=new Date();d.setHours(12,0,0,0);d.setDate(d.getDate()+n);return iso(d);};
+function sample(){return [
+ {id:"s1",date:addDays(-20),sc:"first",pr:"calm",language:"English",mode:"Webcam",minutes:10,nb:8,na:6,m:{confidence:55,clarity:60,communication:62,quality:54},note:"",
+  mo:[["0:20","twist",m3("Tell me about yourself.","Kerro itsestäsi.","Háblame de ti."),m3("Your answer lasted 25 seconds. Try: studies, one experience, why this job.","Vastauksesi kesti 25 sekuntia. Kokeile: opinnot, yksi kokemus, miksi tämä työ.","Tu respuesta duró 25 segundos. Prueba: estudios, una experiencia, por qué este trabajo.")],
+      ["2:45","wobble",m3("Why do you want to work here?","Miksi haluat töihin meille?","¿Por qué quieres trabajar aquí?"),m3("A general answer. Name one thing you like about the company.","Yleinen vastaus. Mainitse yksi asia, josta pidät yrityksessä.","Respuesta general. Nombra una cosa que te guste de la empresa.")],
+      ["5:30","strong",m3("How would you handle an angry customer?","Miten hoitaisit vihaisen asiakkaan?","¿Cómo atenderías a un cliente enfadado?"),m3("Good instinct: you listened first, then solved.","Hyvä vaisto: kuuntelit ensin ja ratkaisit sitten.","Buen instinto: primero escuchaste y luego resolviste.")],
+      ["9:10","wobble",m3("Do you have any questions for us?","Onko sinulla kysyttävää?","¿Tienes alguna pregunta para nosotros?"),m3("You had none. Prepare two before the next rehearsal.","Sinulla ei ollut yhtään. Valmistele kaksi ennen seuraavaa harjoitusta.","No tenías ninguna. Prepara dos para el próximo ensayo.")]],
+  keep:m3("Your friendly, polite tone","Ystävällinen ja kohtelias sävysi","Tu tono amable y educado"),chg:m3("A one-minute story about yourself","Minuutin tarina itsestäsi","Una historia de un minuto sobre ti")},
+ {id:"s2",date:addDays(-14),sc:"quiet",pr:"calm",language:"Finnish",mode:"Webcam",minutes:12,nb:7,na:5,m:{confidence:62,clarity:66,communication:65,quality:60},note:"",
+  mo:[["1:05","twist",m3("(8 seconds of silence)","(8 sekuntia hiljaisuutta)","(8 segundos de silencio)"),m3("You filled the silence with extra details. It is fine to wait.","Täytit hiljaisuuden lisäyksityiskohdilla. Saat odottaa.","Llenaste el silencio con detalles de más. Está bien esperar.")],
+      ["3:40","strong",m3("Tell me about your summer job.","Kerro kesätyöstäsi.","Cuéntame tu trabajo de verano."),m3("Concrete and calm.","Konkreettinen ja rauhallinen.","Concreto y tranquilo.")],
+      ["7:15","wobble",m3("What are your weaknesses?","Mitkä ovat heikkoutesi?","¿Cuáles son tus puntos débiles?"),m3("Add what you are doing to improve.","Kerro myös, miten kehität sitä.","Añade qué haces para mejorar.")],
+      ["10:30","strong",m3("Why should we choose you?","Miksi valitsisimme sinut?","¿Por qué deberíamos elegirte?"),m3("A clear link to what the team needs.","Selkeä yhteys tiimin tarpeisiin.","Una conexión clara con lo que necesita el equipo.")]],
+  keep:m3("Concrete examples from your summer job","Konkreettiset esimerkit kesätyöstä","Ejemplos concretos de tu trabajo de verano"),chg:m3("Let the silence be. You don’t have to fill it.","Anna hiljaisuuden olla. Sitä ei tarvitse täyttää.","Deja que haya silencio. No hace falta llenarlo.")},
+ {id:"s3",date:addDays(-9),sc:"task",pr:"real",language:"English",mode:"Webcam",minutes:15,nb:7,na:4,m:{confidence:70,clarity:72,communication:74,quality:68},note:"",
+  mo:[["0:50","twist",m3("Plan a social media post for our new product.","Suunnittele somepostaus uudelle tuotteellemme.","Planifica una publicación para nuestro nuevo producto."),m3("A good idea. Say who it is for before what it says.","Hyvä idea. Kerro ensin, kenelle se on, ja vasta sitten sisältö.","Buena idea. Di para quién es antes de qué dice.")],
+      ["4:20","strong",m3("How would you measure if it worked?","Miten mittaisit, toimiko se?","¿Cómo medirías si funcionó?"),m3("You named reach and clicks. Exactly right.","Mainitsit tavoittavuuden ja klikkaukset. Juuri oikein.","Mencionaste alcance y clics. Justo eso.")],
+      ["8:05","wobble",m3("What if the budget is zero?","Entä jos budjetti on nolla?","¿Y si el presupuesto es cero?"),m3("You went quiet. Think out loud: it shows how you work.","Hiljenit. Ajattele ääneen, se näyttää miten työskentelet.","Te quedaste callado. Piensa en voz alta: muestra cómo trabajas.")],
+      ["13:30","strong",m3("Any questions for us?","Kysyttävää meille?","¿Alguna pregunta?"),m3("A good question about the team.","Hyvä kysymys tiimistä.","Buena pregunta sobre el equipo.")]],
+  keep:m3("Measuring with real numbers","Mittaaminen oikeilla luvuilla","Medir con números reales"),chg:m3("Think out loud when you hesitate","Ajattele ääneen, kun epäröit","Piensa en voz alta cuando dudes")},
+ {id:"s4",date:addDays(-3),sc:"first",pr:"real",language:"Finnish",mode:"Webcam",minutes:11,nb:5,na:3,m:{confidence:80,clarity:76,communication:79,quality:72},note:"",
+  mo:[["0:15","strong",m3("Tell me about yourself.","Kerro itsestäsi.","Háblame de ti."),m3("Structured and under two minutes. A big step from the first time.","Jäsennelty ja alle kaksi minuuttia. Iso askel ensimmäisestä kerrasta.","Estructurado y en menos de dos minutos. Un gran paso desde la primera vez.")],
+      ["3:00","strong",m3("Why this company?","Miksi juuri tämä yritys?","¿Por qué esta empresa?"),m3("Specific and personal.","Täsmällinen ja henkilökohtainen.","Concreto y personal.")],
+      ["6:20","wobble",m3("Tell me about a conflict at work.","Kerro ristiriidasta työpaikalla.","Cuéntame un conflicto en el trabajo."),m3("The result was missing. End with what changed.","Lopputulos puuttui. Lopeta siihen, mikä muuttui.","Faltó el resultado. Termina con lo que cambió.")],
+      ["9:40","twist",m3("Can you start in two weeks?","Voitko aloittaa kahden viikon päästä?","¿Puedes empezar en dos semanas?"),m3("An honest answer. Next time also say when you could start.","Rehellinen vastaus. Kerro ensi kerralla myös, milloin voisit aloittaa.","Respuesta honesta. La próxima vez di también cuándo podrías empezar.")]],
+  keep:m3("A clear two-minute introduction","Selkeä kahden minuutin esittely","Una presentación clara de dos minutos"),chg:m3("End every story with the result","Lopeta jokainen tarina lopputulokseen","Termina cada historia con el resultado")}
+];}
+const POOL=[["strong",m3("Tell me about yourself.","Kerro itsestäsi.","Háblame de ti."),m3("Clear structure and a calm pace.","Selkeä rakenne ja rauhallinen tahti.","Estructura clara y ritmo tranquilo.")],
+ ["wobble",m3("What is your biggest weakness?","Mikä on suurin heikkoutesi?","¿Cuál es tu mayor debilidad?"),m3("Add what you are doing to improve it.","Kerro myös, miten kehität sitä.","Añade qué haces para mejorarla.")],
+ ["strong",m3("Why do you want this job?","Miksi haluat tämän työn?","¿Por qué quieres este trabajo?"),m3("Specific and motivated. Your best answer.","Täsmällinen ja motivoitunut. Paras vastauksesi.","Concreto y motivado. Tu mejor respuesta.")],
+ ["wobble",m3("Give me a specific example.","Anna konkreettinen esimerkki.","Dame un ejemplo concreto."),m3("The result was missing. Finish with what changed.","Lopputulos puuttui. Lopeta siihen, mikä muuttui.","Faltó el resultado. Termina con lo que cambió.")]];
+const KEEP=[m3("Steady eye contact","Vakaa katsekontakti","Contacto visual firme"),m3("Calm with follow-up questions","Rauhallinen jatkokysymyksissä","Calma con las preguntas de seguimiento")];
+const CHG={confidence:m3("Slow down before key points","Hidasta ennen tärkeitä kohtia","Ve más despacio antes de lo importante"),clarity:m3("Shorter answers with one clear point","Lyhyemmät vastaukset, yksi selkeä pointti","Respuestas más cortas con una idea clara"),communication:m3("Pause and look at the camera","Pidä tauko ja katso kameraan","Haz una pausa y mira a la cámara"),quality:m3("One concrete example in every answer","Yksi konkreettinen esimerkki jokaiseen vastaukseen","Un ejemplo concreto en cada respuesta")};
+
+function fresh(lang){return {lang:lang||"en",logged:false,plan:null,vr:false,tab:"signup",route:"login",
+  user:{name:"Alex Laine",email:"alex@example.com",role:"Marketing Assistant",company:"Nordic Foods Oy",date:addDays(6),sector:"Marketing & Communications",past:["Hospitality & Tourism","Sales & Customer Service"],language:"Finnish"},
+  ss:sample(),cur:"s4",sel:{sc:"salary",pr:"real",language:"Finnish",mode:"Webcam"},nb:6,filter:"All"};}
+
+const KEY="jis-sw-v4";
+let S;try{S=JSON.parse(localStorage.getItem(KEY))||fresh();}catch(e){S=fresh();}
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}};
+
+/* ============ Helpers ============ */
+const $=q=>document.querySelector(q);
+const esc=s=>String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const ov=m=>Math.round((m.confidence+m.clarity+m.communication+m.quality)/4);
+const day=d=>new Date(d+"T12:00:00").toLocaleDateString(LOC[S.lang],{day:"numeric",month:"short"});
+const longDay=d=>new Date(d+"T12:00:00").toLocaleDateString(LOC[S.lang],{weekday:"long",day:"numeric",month:"long"});
+const ini=n=>String(n).trim().split(/\s+/).map(w=>w[0]).slice(0,2).join("").toUpperCase()||"?";
+const list=()=>[...S.ss].sort((a,b)=>a.date.localeCompare(b.date));
+const last=()=>list().slice(-1)[0];
+const bonus=p=>(PRESS.find(x=>x[0]===p)||PRESS[0])[2];
+const xpOf=s=>ov(s.m)*2+bonus(s.pr);
+function lvl(){const xp=S.ss.reduce((a,s)=>a+xpOf(s),0);let c=LEVELS[0];LEVELS.forEach(l=>{if(xp>=l.xp)c=l});const n=LEVELS.find(l=>l.n===c.n+1);return {xp,c,n,pct:n?Math.round((xp-c.xp)/(n.xp-c.xp)*100):100};}
+const prUnlocked=p=>(PRESS.find(x=>x[0]===p)||PRESS[0])[1]<=lvl().c.n;
+const scUnlocked=s=>s.lvl<=lvl().c.n;
+const weakest=m=>MET.slice().sort((a,b)=>m[a]-m[b])[0];
+const daysLeft=()=>{if(!S.user.date)return null;const a=new Date();a.setHours(12,0,0,0);return Math.round((new Date(S.user.date+"T12:00:00")-a)/864e5);};
+const doneSc=id=>S.ss.some(s=>s.sc===id);
+const nextPlan=()=>PLAN.find(id=>!doneSc(id)&&scUnlocked(scById(id)))||PLAN.find(id=>scUnlocked(scById(id))&&id==="panel")||"first";
+function toast(m){const e=$("#toast");e.innerHTML=ic("check",18,2.5)+"<span>"+esc(m)+"</span>";e.hidden=false;clearTimeout(toast.t);toast.t=setTimeout(()=>e.hidden=true,2600);}
+
+/* Brand arcs: open on the right like the logo */
+function arcs(vals,size,draw){
+  size=size||240;const sw=Math.round(size*.07),gap=sw*1.25;const cols=["#00AEEF","#000000","#86CEF4"];
+  let out="";vals.forEach((v,i)=>{const r=size/2-sw/2-i*(sw+gap);const c=2*Math.PI*r;const len=c*.8;const val=len*Math.max(0,Math.min(1,v));
+   out+=`<circle cx="${size/2}" cy="${size/2}" r="${r.toFixed(1)}" fill="none" stroke="#EDF0F2" stroke-width="${sw}" stroke-linecap="round" stroke-dasharray="${len.toFixed(1)} ${c.toFixed(1)}" transform="rotate(36 ${size/2} ${size/2})"/>`+
+        `<circle class="v" cx="${size/2}" cy="${size/2}" r="${r.toFixed(1)}" fill="none" stroke="${cols[i]}" stroke-width="${sw}" stroke-linecap="round" stroke-dasharray="${Math.max(.1,val).toFixed(1)} ${c.toFixed(1)}" transform="rotate(36 ${size/2} ${size/2})"/>`;});
+  return `<svg class="arcs ${draw?"draw":""}" width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" aria-hidden="true">${out}</svg>`;
+}
+const DECO=`<svg class="deco" viewBox="0 0 400 400" aria-hidden="true"><path d="M318 82A168 168 0 1 0 318 318" fill="none" stroke="#00AEEF" stroke-width="22" stroke-linecap="round"/><path d="M290 112A128 128 0 1 0 290 288" fill="none" stroke="#2A3135" stroke-width="18" stroke-linecap="round"/><path d="M262 142A88 88 0 1 0 262 258" fill="none" stroke="#86CEF4" stroke-width="16" stroke-linecap="round"/></svg>`;
+
+/* Nerves chart: dumbbell before → after */
+function nervesChart(items){
+  const w=560,h=220,pl=34,pr=16,pt=16,pb=34,n=items.length;
+  const x=i=>pl+(n<2?(w-pl-pr)/2:i*(w-pl-pr)/(n-1));const y=v=>pt+(10-v)/9*(h-pt-pb);
+  let g="";[1,4,7,10].forEach(v=>{g+=`<line x1="${pl}" x2="${w-pr}" y1="${y(v)}" y2="${y(v)}" stroke="#EDF0F2"/><text x="${pl-12}" y="${y(v)+4}" text-anchor="end" font-size="12" fill="#8A949A">${v}</text>`;});
+  items.forEach((s,i)=>{const X=x(i);g+=`<line x1="${X}" x2="${X}" y1="${y(s.nb)}" y2="${y(s.na)}" stroke="#C9D1D6" stroke-width="3"/><circle cx="${X}" cy="${y(s.nb)}" r="8" fill="#E8590C"/><circle cx="${X}" cy="${y(s.na)}" r="8" fill="#00AEEF"/><text x="${X}" y="${h-10}" text-anchor="${i===0&&n>1?"start":i===n-1&&n>1?"end":"middle"}" font-size="12" fill="#667078">${day(s.date)}</text>`;});
+  const lbl=items.map(s=>`${day(s.date)}: ${s.nb} → ${s.na}`).join(", ");
+  return `<svg viewBox="0 0 ${w} ${h}" width="100%" role="img" aria-label="${esc(t("nervesT")+". "+lbl)}">${g}</svg>
+  <div class="row small mute" style="gap:20px;margin-top:8px"><span class="row" style="gap:8px"><i style="width:12px;height:12px;border-radius:50%;background:#E8590C;display:inline-block"></i>${t("before")}</span><span class="row" style="gap:8px"><i style="width:12px;height:12px;border-radius:50%;background:#00AEEF;display:inline-block"></i>${t("after")}</span></div>`;
+}
+function skillLine(items){
+  const w=560,h=200,pl=8,pr=8,pt=26,pb=28,n=items.length;
+  const x=i=>pl+(n<2?(w-pl-pr)/2:i*(w-pl-pr)/(n-1));const y=v=>pt+(100-Math.max(40,v))/60*(h-pt-pb);
+  const pts=items.map((s,i)=>[x(i),y(ov(s.m))]);const path=pts.map((p,i)=>(i?"L":"M")+p[0].toFixed(1)+" "+p[1].toFixed(1)).join(" ");
+  return `<svg viewBox="0 0 ${w} ${h}" width="100%" role="img" aria-label="${items.map(s=>ov(s.m)).join(", ")}"><path d="${path}" fill="none" stroke="#000" stroke-width="2.5" stroke-linejoin="round"/>${pts.map((p,i)=>`<circle cx="${p[0]}" cy="${p[1]}" r="${i===n-1?7:4.5}" fill="${i===n-1?"#00AEEF":"#fff"}" stroke="#000" stroke-width="2"/><text x="${Math.min(w-16,Math.max(16,p[0]))}" y="${p[1]-14}" text-anchor="middle" font-size="15" font-weight="600" font-family="Barlow Semi Condensed,Arial" fill="#000">${ov(items[i].m)}</text><text x="${p[0]}" y="${h-6}" text-anchor="${i===0&&n>1?"start":i===n-1&&n>1?"end":"middle"}" font-size="12" fill="#667078">${day(items[i].date)}</text>`).join("")}</svg>`;
+}
+
+/* ============ Header ============ */
+function renderTop(){
+  const ok=S.logged&&S.plan;
+  const nav=[["today","today","today"],["scenarios","scenarios","grid"],["debriefs","debriefs","doc"],["progress","progress","chart"]];
+  const map={brief:"scenarios",room:"scenarios",debrief:"debriefs"};const cur=map[S.route]||S.route;
+  $("#top").innerHTML=`<div class="top-in">
+   <button class="brand" data-go="${ok?"today":"login"}" aria-label="Simulation Wizard, ${esc(t("product"))}"><img src="${LOGO}" alt=""><span>${t("product")}</span></button>
+   ${ok?`<nav class="nav" aria-label="Main">${nav.map(([r,k,i])=>`<button data-go="${r}" ${cur===r?'aria-current="page"':""}>${ic(i,20)}<span>${t(k)}</span></button>`).join("")}</nav>`:""}
+   <div class="langs ${ok?"":"ml"}" role="group" aria-label="Language">${["en","fi","es"].map(l=>`<button data-act="lang" data-v="${l}" aria-pressed="${S.lang===l}" lang="${l}">${l.toUpperCase()}</button>`).join("")}</div>
+   ${ok?`<button class="me" data-go="profile" aria-label="${t("profile")}">${esc(ini(S.user.name))}</button>`:""}
+  </div>`;
+  document.documentElement.lang=S.lang;$("#footnote").textContent=t("foot");$("#resetbtn").textContent=t("reset");
+}
+
+/* ============ Views ============ */
+function vLogin(){
+  const up=S.tab==="signup";
+  const why=[["w1","chat"],["w2","repeat"],["w3","swap"],["w4","calendar"]];
+  return `<section class="land">
+   <div class="intro">
+     <img class="bigmark" src="${LOGO}" alt="Simulation Wizard">
+     <h1>${t("h1")}</h1>
+     <p class="lead">${t("sub")}</p>
+     <ul class="why">${why.map(([k,i])=>`<li>${ic(i,24)}<b>${t(k+"t")}</b><span>${t(k+"d")}</span></li>`).join("")}</ul>
+   </div>
+   <div class="authbox">
+     <div class="tabs" role="tablist" aria-label="Account">
+       <button role="tab" aria-selected="${up}" data-act="tab" data-v="signup">${t("createAccount")}</button>
+       <button role="tab" aria-selected="${!up}" data-act="tab" data-v="login">${t("login")}</button>
+     </div>
+     <form id="auth" class="stack g-m" novalidate>
+       ${up?`<div class="field"><label for="a-n">${t("name")}</label><input id="a-n" autocomplete="name" value="${esc(S.user.name)}"></div>`:""}
+       <div class="field"><label for="a-e">${t("email")}</label><input id="a-e" type="email" autocomplete="email" value="${esc(S.user.email)}"></div>
+       <div class="field"><label for="a-p">${t("password")}</label><input id="a-p" type="password" autocomplete="${up?"new-password":"current-password"}"></div>
+       <button class="btn btn-k" type="submit" style="margin-top:6px">${up?t("createAccount"):t("login")}</button>
+     </form>
+     <div class="or">${t("or")}</div>
+     <button class="btn btn-o" data-act="guest">${t("guest")}</button>
+   </div>
+  </section>`;
+}
+
+function vPlans(){
+  const li=k=>`<li>${ic("check",18,2.5)}<span>${t(k)}</span></li>`;
+  return `<div class="page stack g-xl">
+   <div class="stack g-m" style="max-width:820px"><h1 style="font-size:clamp(36px,4.4vw,56px)">${t("plansTitle")}</h1></div>
+   <div class="stack g-l">
+   <div class="plans">
+     <div class="plan"><h3>${t("free")}</h3><div><div class="price">€0</div><div class="per">${t("freePer")}</div></div><ul>${li("f1")}${li("f2")}</ul><button class="btn btn-o" data-act="plan" data-v="free">${t("freeBtn")}</button></div>
+     <div class="plan hi"><span class="tag c flag">${t("sprintFlag")}</span><h3>${t("sprint")}</h3><div><div class="price">€3.90</div><div class="per">${t("sprintPer")}</div></div><ul>${li("s1")}${li("s2")}${li("s3")}</ul><button class="btn btn-p" data-act="plan" data-v="sprint">${t("sprintBtn")}</button></div>
+     <div class="plan"><h3>${t("monthly")}</h3><div><div class="price">€5.90</div><div class="per">${t("monthlyPer")}</div></div><ul>${li("m1")}${li("m2")}${li("m3")}</ul><button class="btn btn-o" data-act="plan" data-v="monthly">${t("monthlyBtn")}</button></div>
+   </div>
+   <div class="vrline">${ic("vr",32,1.8)}<div style="flex:1 1 280px"><h3 class="row" style="gap:10px">${t("vr")} <span class="tag e">${t("premium")}</span></h3><p class="mute" style="margin-top:6px">${t("vrSub")}</p></div><button class="btn ${S.vr?"btn-o":"btn-k"}" data-act="vr">${S.vr?t("vrRemove"):t("vrAdd")}</button></div>
+   </div>
+  </div>`;
+}
+
+function sectorTiles(cur,act){return `<div class="tiles">${SECTORS.map(([k,f])=>`<button type="button" class="tile" aria-pressed="${cur===f}" data-act="${act}" data-v="${esc(f)}">${ic(k,22)}<span>${dn("sector",f)}</span></button>`).join("")}</div>`;}
+
+function vSetup(){
+  const u=S.user;
+  return `<div class="page stack g-xl" style="max-width:900px">
+   <div class="stack g-m"><h1>${t("setupTitle")}</h1><p class="lead mute">${t("setupSub")}</p></div>
+   <form id="setup" class="stack g-l">
+     <div class="field" style="max-width:320px"><label for="u-d">${t("date")}</label><input id="u-d" type="date" value="${esc(u.date||"")}" min="${addDays(0)}"></div>
+     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:20px">
+       <div class="field"><label for="u-r">${t("position")}</label><input id="u-r" value="${esc(u.role)}" placeholder="${esc(t("positionPh"))}"></div>
+       <div class="field"><label for="u-c">${t("company")}</label><input id="u-c" value="${esc(u.company)}" placeholder="${esc(t("companyPh"))}"></div>
+     </div>
+     <div class="stack g-m"><span class="field"><label>${t("sector")}</label></span>${sectorTiles(u.sector,"usector")}</div>
+     <div class="row" style="gap:20px;margin-top:8px"><button class="btn btn-k" type="submit">${t("buildPlan")}</button><button class="link" type="button" data-act="nodate">${t("noDate")}</button></div>
+   </form>
+  </div>`;
+}
+
+function readiness(draw){
+  const done=PLAN.filter(doneSc).length/PLAN.length;const l=last();const sk=ov(l.m)/100;const calm=(10-l.na)/9;
+  return `<div class="ready">${arcs([done,sk,calm],230,draw)}
+   <ul class="legend">
+    <li><i style="background:#00AEEF"></i><b>${Math.round(done*100)}%</b><span>${t("rPlan")}</span></li>
+    <li><i style="background:#000"></i><b>${ov(l.m)}</b><span>${t("rSkills")}</span></li>
+    <li><i style="background:#86CEF4"></i><b>${Math.round(calm*100)}%</b><span>${t("rCalm")}</span></li>
+   </ul></div>`;
+}
+
+function planTimeline(){
+  const dl=daysLeft();const start=addDays(0);const steps=PLAN.filter(id=>!doneSc(id));const doneIds=PLAN.filter(doneSc);
+  const remaining=dl&&dl>0?Math.min(steps.length,dl):steps.length;
+  const upcoming=steps.slice(0,remaining).map((id,i)=>({id,date:addDays(dl&&dl>0?Math.floor(i*dl/remaining):i)}));
+  const doneItems=doneIds.map(id=>({id,done:true,date:(list().find(s=>s.sc===id)||{}).date}));
+  const nxt=nextPlan();
+  return `<ol class="timeline">${doneItems.map(d=>`<li class="done"><span class="pt">${ic("check",12,3.5)}</span><span class="d">${day(d.date)}</span><b>${L(scById(d.id).t)}</b></li>`).join("")}
+   ${upcoming.map(u=>`<li class="${u.id===nxt?"next":""}"><span class="pt"></span><span class="d">${u.date===start?t("d0"):day(u.date)}</span><b>${L(scById(u.id).t)}</b></li>`).join("")}
+   ${S.user.date?`<li class="day"><span class="pt"></span><span class="d">${day(S.user.date)}</span><b>${t("interview")}</b></li>`:""}</ol>`;
+}
+
+function vToday(draw){
+  const dl=daysLeft(),u=S.user,nx=scById(nextPlan()),items=list(),f=items[0],l=last();
+  const big=dl===null?"":dl<=0?`<div class="days">${t("d0")}</div>`:`<div class="days">${dl}<small>${dl===1?t("d1"):t("dn")}</small></div>`;
+  return `<div class="page stack" style="gap:72px">
+   <section class="count">
+     <div>${dl===null?`<h1>${t("noDateT")}</h1><p class="lead mute" style="margin-top:16px">${t("noDateD")}</p><button class="btn btn-k" style="margin-top:24px" data-go="setup">${ic("calendar",18)} ${t("addDate")}</button>`:
+       `${big}<p class="what">${dl>0?t("until")+"<br>":""}<b>${esc(t("asAt",{r:u.role,c:u.company||"—"}))}</b><br><span class="mute small" style="font-size:16px">${longDay(u.date)}</span></p>`}</div>
+     ${readiness(draw)}
+   </section>
+
+   <section class="rehearse">
+     <div>
+       <p class="k">${t("todayR")}</p>
+       <h2 style="margin-top:10px">${L(nx.t)}</h2>
+       <dl><dt>${t("youMeet")}</dt><dd>${L(nx.who)}</dd><dt>${t("twist")}</dt><dd>${L(nx.tw)}</dd><dt>${t("length")}</dt><dd>${t("min",{n:nx.min})}</dd></dl>
+       <div class="acts"><button class="btn btn-p" data-act="pick" data-v="${nx.id}" data-next="brief">${ic("play",16)} ${t("startR")}</button><button class="btn btn-o" data-go="scenarios">${t("other")}</button></div>
+     </div>${DECO}
+   </section>
+
+   <section><div class="section-h"><h2>${t("yourPlan")}</h2></div>${planTimeline()}</section>
+
+   <div class="two">
+     <section><div class="section-h"><h2>${t("nervesT")}</h2></div>${nervesChart(items)}<p class="small mute" style="margin-top:14px">${t("nervesNote",{a:f.na,b:l.na})}</p></section>
+     <section><div class="section-h"><h2>${t("latest")}</h2><button class="link" data-go="debriefs">${t("seeAll")}</button></div>
+       <div>${items.slice().reverse().slice(0,3).map(drow).join("")}</div></section>
+   </div>
+  </div>`;
+}
+
+function drow(s){const sc=scById(s.sc);return `<button class="drow" data-act="open" data-v="${s.id}"><span class="ico">${ic(sc.ic,22)}</span><span><b>${L(sc.t)}</b><span class="small mute">${day(s.date)}, ${t(s.pr)}, ${dn("lang",s.language)}</span></span><span class="sc">${ov(s.m)}</span></button>`;}
+
+function vScenarios(){
+  const sel=S.sel,L1=lvl();const cur=scById(sel.sc);
+  return `<div class="page">
+   <div class="stack g-m" style="margin-bottom:44px"><h1>${t("scTitle")}</h1><p class="lead mute">${t("scSub")}</p></div>
+   <div class="sclayout">
+     <div class="sclist" role="group" aria-label="${t("scTitle")}">${SC.map(s=>{const lk=!scUnlocked(s);return `<button class="scn" aria-pressed="${sel.sc===s.id}" data-act="sel" data-k="sc" data-v="${s.id}" ${lk?"disabled":""}><span class="ico">${ic(lk?"lock":s.ic,24)}</span><span><b>${L(s.t)}</b><p>${L(s.who)}. <em>${L(s.tw)}.</em></p></span><span class="meta"><span>${t("min",{n:s.min})}</span>${lk?`<span class="tag">${t("unlockAt",{n:s.lvl})}</span>`:doneSc(s.id)?`<span class="tag l">${t("done")}</span>`:""}</span></button>`;}).join("")}</div>
+     <aside class="setup" aria-label="${t("setupR")}">
+       <div><p class="small mute">${t("setupR")}</p><h3 style="margin-top:6px">${L(cur.t)}</h3></div>
+       <div><span class="lbl">${t("pressure")}</span><div class="seg">${PRESS.map(([p,n,b])=>{const lk=!prUnlocked(p);return `<button aria-pressed="${sel.pr===p}" data-act="sel" data-k="pr" data-v="${p}" ${lk?"disabled":""}>${lk?ic("lock",14):""}${t(p)}</button>`;}).join("")}</div></div>
+       <div><span class="lbl">${t("language")}</span><div class="seg">${LANGS.map(x=>`<button aria-pressed="${sel.language===x}" data-act="sel" data-k="language" data-v="${x}">${dn("lang",x)}</button>`).join("")}</div></div>
+       <div><span class="lbl">${t("mode")}</span><div class="seg"><button aria-pressed="${sel.mode==="Webcam"}" data-act="sel" data-k="mode" data-v="Webcam">${ic("cam",16)} ${t("webcam")}</button><button aria-pressed="${sel.mode==="VR"}" data-act="sel" data-k="mode" data-v="VR" ${S.vr?"":"disabled"}>${ic(S.vr?"vr":"lock",16)} VR / 360</button></div>
+         ${S.vr?"":`<button class="link small" data-go="plans" style="margin-top:10px">${t("vrAdd")}</button>`}</div>
+       <p class="small mute">${ic(sKey(S.user.sector),16)} ${t("sectorTask",{s:dn("sector",S.user.sector)})}. <button class="link small" data-go="profile">${t("change")}</button></p>
+       <button class="btn btn-k" data-go="brief">${t("toBrief")} <span class="tag c" style="margin-left:4px">${t("bonus",{n:bonus(sel.pr)})}</span></button>
+     </aside>
+   </div>
+  </div>`;
+}
+
+function vBrief(){
+  const s=scById(S.sel.sc),l=last();
+  return `<div class="page">
+   <button class="back" data-go="scenarios">${ic("back",18)} ${t("scenarios")}</button>
+   <div class="brief">
+     <div>
+       <p class="mute" style="font-size:18px">${t("briefT")}</p>
+       <h1 style="margin-top:12px">${L(s.t)}</h1>
+       <div class="row" style="margin-top:20px"><span class="tag">${t(S.sel.pr)}</span><span class="tag">${dn("lang",S.sel.language)}</span><span class="tag">${S.sel.mode==="VR"?"VR / 360":t("webcam")}</span><span class="tag">${t("min",{n:s.min})}</span></div>
+       <div class="facts"><div><p class="k">${t("youMeet")}</p><p>${L(s.who)}</p></div><div><p class="k">${t("twist")}</p><p>${L(s.tw)}</p></div><div><p class="k">${t("goal")}</p><p>${l?L(l.chg):t("goalDefault")}</p></div></div>
+     </div>
+     <div class="setup">
+       <div class="scale"><label for="nb" style="font-weight:600;color:var(--black);font-size:17px">${t("nervesNow")}</label>
+         <div class="val" id="nbv">${S.nb}<span style="font-size:24px;color:var(--mute)"> / 10</span></div>
+         <input id="nb" type="range" min="1" max="10" step="1" value="${S.nb}" data-range="nb">
+         <div class="ends"><span>${t("relaxed")}</span><span>${t("veryN")}</span></div></div>
+       <p class="calmnote">${ic("heart",20)}<span>${t("safe")}</span></p>
+       <button class="btn btn-k" data-go="room">${ic("play",16)} ${t("enter")}</button>
+     </div>
+   </div>
+  </div>`;
+}
+
+function vRoom(){
+  const s=scById(S.sel.sc),vr=S.sel.mode==="VR";
+  return `<div class="page">
+   <button class="back" data-go="brief">${ic("back",18)} ${t("briefT")}</button>
+   <h1 style="font-size:clamp(34px,4vw,52px)">${L(s.t)}</h1>
+   <div class="stage"><div><span class="avatar">${vr?ic("vr",48,1.8):"AI"}</span><b>${vr?t("room"):t("ai")}</b><span>${L(s.who)}</span></div><div>${ic(vr?"vr":"cam",56,1.5)}<b>${vr?t("headset"):t("cam")}</b></div></div>
+   <div class="notice"><div class="row" style="gap:14px;flex:1 1 300px"><span class="tag e">${t("soon")}</span><span style="color:var(--black)">${t("notActive")}</span></div><button class="btn btn-k" data-act="sim">${t("finish")}</button></div>
+  </div>`;
+}
+
+function vDebriefs(){
+  const items=list().reverse().filter(s=>S.filter==="All"||s.sc===S.filter);const used=[...new Set(S.ss.map(s=>s.sc))];
+  return `<div class="page">
+   <div class="section-h" style="margin-bottom:28px"><h1>${t("debT")}</h1><button class="btn btn-k" data-go="scenarios">${ic("play",16)} ${t("startR")}</button></div>
+   <div class="row" style="margin-bottom:24px" role="group"><button class="chipbtn" aria-pressed="${S.filter==="All"}" data-act="filter" data-v="All">${t("all")}</button>${used.map(id=>`<button class="chipbtn" aria-pressed="${S.filter===id}" data-act="filter" data-v="${id}">${L(scById(id).t)}</button>`).join("")}</div>
+   <div>${items.map(drow).join("")}</div>
+  </div>`;
+}
+
+function vDebrief(){
+  const s=S.ss.find(x=>x.id===S.cur)||last(),sc=scById(s.sc),items=list(),k=items.findIndex(x=>x.id===s.id),p=k>0?items[k-1]:null,v=ov(s.m),w=weakest(s.m);
+  const pos=n=>((n-1)/9*100).toFixed(1)+"%";const lo=Math.min(s.nb,s.na),hi=Math.max(s.nb,s.na);
+  const kindLbl={strong:t("strong"),wobble:t("wobble"),twist:t("tw")};
+  const nextId=nextPlan();
+  return `<div class="page">
+   <button class="back" data-go="debriefs">${ic("back",18)} ${t("debriefs")}</button>
+   <header class="dhead">
+     <div><p class="mute" style="font-size:18px">${longDay(s.date)}</p><h1 style="margin-top:10px">${L(sc.t)}</h1>
+       <div class="row" style="margin-top:18px"><span class="tag">${t(s.pr)}</span><span class="tag">${dn("lang",s.language)}</span><span class="tag">${s.mode==="VR"?"VR / 360":t("webcam")}</span><span class="tag">${t("min",{n:s.minutes})}</span></div></div>
+     <div class="row" style="gap:16px;align-items:flex-end"><span style="font-family:var(--disp);font-weight:700;font-size:96px;line-height:.8;color:var(--black)">${v}</span><span class="stack" style="gap:4px;padding-bottom:4px"><span class="mute small">${t("overall")}</span>${p?`<span class="tag ${v-ov(p.m)>=0?"l":"e"}">${v-ov(p.m)>=0?"+":""}${v-ov(p.m)} ${t("vsPrev")}</span>`:""}</span></div>
+   </header>
+
+   <section class="phase"><span class="n">1</span><div><h2>${t("p1")}</h2>
+     <div class="react">
+       <div class="stack g-m">
+         <div class="nscale" aria-hidden="true"><div class="ticks"><span>1</span><span>10</span></div><div class="track"></div><div class="span" style="left:${pos(lo)};width:calc(${pos(hi)} - ${pos(lo)})"></div>
+           <span class="dot b" style="left:${pos(s.nb)};background:#E8590C;color:#E8590C"><span>${t("before")} ${s.nb}</span></span><span class="dot" style="left:${pos(s.na)};background:#00AEEF;color:#00AEEF"><span>${t("after")} ${s.na}</span></span></div>
+         <div class="scale" style="margin-top:20px"><label for="na" style="font-weight:600;color:var(--black)">${t("feelNow")}</label><input id="na" type="range" min="1" max="10" value="${s.na}" data-range="na" data-id="${s.id}"><div class="ends"><span>${t("relaxed")}</span><span>${t("veryN")}</span></div></div>
+       </div>
+       <div class="field"><label for="hard">${t("hardest")}</label><textarea id="hard" data-note="${s.id}" placeholder="${esc(t("hardestPh"))}">${esc(s.note||"")}</textarea></div>
+     </div></div></section>
+
+   <section class="phase"><span class="n">2</span><div><div class="section-h" style="margin-bottom:12px"><h2 style="margin:0">${t("p2")}</h2><span class="small mute">${t("tapMoment")}</span></div>
+     <ol class="moments">${s.mo.map((m,i)=>`<li class="mo"><span class="tm">${m[0]}</span><span class="mk ${m[1]}"></span><details ${i===0?"open":""}><summary><b>${esc(L(m[2]))}</b><span class="tag ${m[1]==="strong"?"l":m[1]==="wobble"?"e":"c"}">${kindLbl[m[1]]}</span></summary><div class="body"><p>${esc(L(m[3]))}</p>${m[1]!=="strong"?`<button class="link" data-act="again" data-v="${s.id}">${ic("repeat",16)} ${t("rehearseMoment")}</button>`:""}</div></details></li>`).join("")}</ol></div></section>
+
+   <section class="phase"><span class="n">3</span><div><h2>${t("p3")}</h2>
+     <div>${MET.map(key=>`<div class="sk"><span>${dn("metric",key)}</span><div class="meter"><i class="${key===w?"low":""}" style="width:${s.m[key]}%"></i>${p?`<s style="left:${p.m[key]}%" title="${t("prevMark")}"></s>`:""}</div><b>${s.m[key]}</b></div>`).join("")}</div>
+     ${p?`<p class="small mute row" style="gap:8px;margin-top:10px"><i style="width:2px;height:14px;background:#00AEEF;display:inline-block"></i>${t("prevMark")}</p>`:""}</div></section>
+
+   <section class="phase" style="border-bottom:0"><span class="n">4</span><div><h2>${t("p4")}</h2>
+     <div class="kc"><div class="keep"><span class="k">${t("keep")}</span><p>${esc(L(s.keep))}</p></div><div class="chg"><span class="k">${t("try")}</span><p>${esc(L(s.chg))}</p></div></div>
+     <div class="row" style="gap:12px;margin-top:28px"><button class="btn btn-k" data-act="again" data-v="${s.id}">${ic("repeat",16)} ${t("again")}</button>${nextId!==s.sc?`<button class="btn btn-o" data-act="pick" data-v="${nextId}" data-next="brief">${t("nextPlan")}: ${L(scById(nextId).t)}</button>`:""}</div></div></section>
+  </div>`;
+}
+
+function vProgress(){
+  const L1=lvl(),items=list(),f=items[0],l=last();
+  const sectors=[...new Set([S.user.sector,...S.user.past])].map(sec=>{const tasks=S.ss.filter(s=>s.sc==="task");return {sec,val:sec===S.user.sector&&tasks.length?Math.round(tasks.reduce((a,s)=>a+ov(s.m),0)/tasks.length):null};});
+  const badges=[["b1","star",S.ss.length>=1],["b2","fire",S.ss.length>=5],["b3","pause",doneSc("quiet")],["b4","swap",doneSc("switch")],["b5","bolt",S.ss.some(s=>ov(s.m)>=75)],["b6","panel",S.ss.some(s=>s.pr==="tough")],["b7","heart",S.ss.some(s=>s.nb-s.na>=3)],["b8","vr",S.ss.some(s=>s.mode==="VR")]];
+  return `<div class="page stack" style="gap:72px">
+   <div class="section-h" style="margin:0"><h1>${t("progress")}</h1><span class="mute" style="font-size:18px">${L1.xp} XP, ${S.ss.length} ${t("rehearsals")}</span></div>
+   <section><div class="section-h"><h2>${t("levels")}</h2><span class="small mute">${L1.n?t("xpTo",{x:L1.n.xp-L1.xp,n:dn("lvl",L1.n.n)}):t("top")}</span></div>
+     <ol class="lvlpath">${LEVELS.map(x=>{const st=x.n<L1.c.n?"done":x.n===L1.c.n?"now":"off";const w=st==="done"?100:st==="now"?Math.max(6,L1.pct):0;return `<li class="${st}"><div class="bar ${st==="now"?"now":""}"><i style="width:${w}%"></i></div><span class="n">${t("lvl")} ${x.n}, ${x.xp} XP</span><b>${dn("lvl",x.n)}</b><p>${dn("unlock",x.n)}</p></li>`;}).join("")}</ol></section>
+   <div class="two">
+     <section><div class="section-h"><h2>${t("nervesT")}</h2></div>${nervesChart(items)}</section>
+     <section><div class="section-h"><h2>${t("skills")}</h2></div>${skillLine(items)}
+       <div style="margin-top:14px">${MET.map(k=>{const c=l.m[k]-f.m[k];return `<div class="sk"><span>${dn("metric",k)}</span><div class="meter"><i style="width:${l.m[k]}%"></i></div><b>${l.m[k]}</b></div>`;}).join("")}</div>
+       <p class="small mute" style="margin-top:8px">+${ov(l.m)-ov(f.m)} ${t("sinceStart")}</p></section>
+   </div>
+   <div class="two">
+     <section><div class="section-h"><h2>${t("sectors")}</h2><button class="link" data-go="profile">${t("change")}</button></div>
+       ${sectors.map(r=>`<div class="secrow">${ic(sKey(r.sec),22)}<div class="nm"><span>${dn("sector",r.sec)} <span class="tag ${r.sec===S.user.sector?"c":""}">${r.sec===S.user.sector?t("current"):t("previous")}</span></span>${r.val!==null?`<div class="meter"><i style="width:${r.val}%"></i></div>`:""}</div><b>${r.val!==null?r.val:""}</b></div>`).join("")}</section>
+     <section><div class="section-h"><h2>${t("scenarios")}</h2></div>
+       ${SC.map(s=>{const a=S.ss.filter(x=>x.sc===s.id);const v=a.length?Math.round(a.reduce((q,x)=>q+ov(x.m),0)/a.length):null;return `<div class="secrow">${ic(scUnlocked(s)?s.ic:"lock",22)}<div class="nm"><span>${L(s.t)}</span>${v!==null?`<div class="meter"><i style="width:${v}%"></i></div>`:""}</div><b>${v!==null?v:`<span class="small mute" style="font-family:var(--body);font-weight:400">${scUnlocked(s)?"":t("unlockAt",{n:s.lvl})}</span>`}</b></div>`;}).join("")}</section>
+   </div>
+   <section><div class="section-h"><h2>${t("badges")}</h2></div><div class="badges">${badges.map(([k,i,ok])=>`<div class="bdg ${ok?"":"off"}"><i>${ic(ok?i:"lock",24)}</i>${dn("badge",k)}</div>`).join("")}</div></section>
+  </div>`;
+}
+
+function vProfile(){
+  const u=S.user;const pn={free:t("free"),sprint:t("sprint"),monthly:t("monthly")}[S.plan]||"";
+  return `<div class="page">
+   <div class="section-h" style="margin-bottom:44px"><div class="row" style="gap:20px"><span class="me" style="width:76px;height:76px;font-size:26px;display:flex;align-items:center;justify-content:center;cursor:default">${esc(ini(u.name))}</span><div><h1 style="font-size:44px">${esc(u.name)}</h1><p class="mute">${esc(u.email)}</p></div></div><button class="btn btn-o" data-act="logout">${t("logout")}</button></div>
+   <div class="prof">
+     <form id="prof" class="stack" style="gap:40px">
+       <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr));gap:20px">
+         <div class="field"><label for="p-n">${t("name")}</label><input id="p-n" value="${esc(u.name)}"></div>
+         <div class="field"><label for="p-r">${t("position")}</label><input id="p-r" value="${esc(u.role)}"></div>
+         <div class="field"><label for="p-c">${t("company")}</label><input id="p-c" value="${esc(u.company)}"></div>
+         <div class="field"><label for="p-d">${t("date")}</label><input id="p-d" type="date" value="${esc(u.date||"")}"></div>
+       </div>
+       <div class="stack g-m"><h3>${t("curSector")}</h3>${sectorTiles(u.sector,"usector")}</div>
+       <div class="stack g-m"><h3>${t("prevSectors")}</h3><div class="row">${SECTORS.filter(s=>s[1]!==u.sector).map(([k,f])=>`<button type="button" class="chipbtn" aria-pressed="${u.past.includes(f)}" data-act="past" data-v="${esc(f)}">${dn("sector",f)}</button>`).join("")}</div></div>
+       <div class="stack g-m"><h3>${t("defLang")}</h3><div class="seg">${LANGS.map(x=>`<button type="button" aria-pressed="${u.language===x}" data-act="ulang" data-v="${x}">${dn("lang",x)}</button>`).join("")}</div></div>
+       <button class="btn btn-k" type="submit" style="align-self:flex-start">${t("save")}</button>
+     </form>
+     <aside class="side"><p class="small mute">${t("plan")}</p><h3>${pn}</h3><p class="mute">${t("vrState",{s:S.vr?t("on"):t("off")})}</p><button class="btn btn-o" data-go="plans">${t("plans")}</button></aside>
+   </div>
+  </div>`;
+}
+
+/* ============ Router ============ */
+let lastRoute=null;
+function render(){
+  if(!S.logged)S.route="login";else if(!S.plan&&S.route!=="plans")S.route="plans";
+  const changed=S.route!==lastRoute,y=window.scrollY;
+  const ae=document.activeElement,fd=ae&&ae.dataset&&ae.dataset.act?{act:ae.dataset.act,k:ae.dataset.k,v:ae.dataset.v}:null;
+  renderTop();
+  const V={login:vLogin,plans:vPlans,setup:vSetup,today:vToday,scenarios:vScenarios,brief:vBrief,room:vRoom,debriefs:vDebriefs,debrief:vDebrief,progress:vProgress,profile:vProfile};
+  $("#app").innerHTML=(V[S.route]||vToday)(changed);
+  save();
+  if(changed){window.scrollTo(0,0);lastRoute=S.route;}
+  else{window.scrollTo(0,y);if(fd){const sel=`[data-act="${fd.act}"]`+(fd.k?`[data-k="${fd.k}"]`:"")+(fd.v?`[data-v="${CSS.escape(fd.v)}"]`:"");const el=document.querySelector(sel);if(el)el.focus({preventScroll:true});}}
+}
+const go=r=>{S.route=r;render();};
+
+function simulate(){
+  const sel=S.sel,b=last().m,adj={calm:3,real:0,tough:-6}[sel.pr],r=()=>Math.round(Math.random()*8)-2,c=v=>Math.max(35,Math.min(96,v));
+  const m={confidence:c(b.confidence+r()+adj),clarity:c(b.clarity+r()+adj),communication:c(b.communication+r()+adj),quality:c(b.quality+r()+adj+1)};
+  const sc=scById(sel.sc);const p=POOL.slice().sort(()=>Math.random()-.5).slice(0,3);
+  const mo=[["0:30",p[0][0],p[0][1],p[0][2]],["3:10","twist",sc.tw,m3("You handled the twist. Next time take a breath before answering.","Selvisit yllätyksestä. Hengitä ensi kerralla ennen vastausta.","Superaste el giro. La próxima vez respira antes de responder.")],["6:40",p[1][0],p[1][1],p[1][2]],["9:50",p[2][0],p[2][1],p[2][2]]];
+  const na=Math.max(1,S.nb-1-Math.floor(Math.random()*3));
+  const it={id:"s"+Date.now(),date:addDays(0),sc:sel.sc,pr:sel.pr,language:sel.language,mode:sel.mode,minutes:sc.min+Math.round(Math.random()*3)-1,nb:S.nb,na,m,note:"",mo,keep:KEEP[Math.floor(Math.random()*2)],chg:CHG[weakest(m)]};
+  const before=lvl().c.n;S.ss.push(it);S.cur=it.id;const after=lvl().c;
+  go("debrief");toast(after.n>before?t("tLevel",{n:dn("lvl",after.n)}):`+${xpOf(it)} XP`);
+}
+
+document.addEventListener("click",e=>{
+  const g=e.target.closest("[data-go]");if(g){e.preventDefault();go(g.dataset.go);return;}
+  const a=e.target.closest("[data-act]");if(!a)return;const v=a.dataset.v;
+  switch(a.dataset.act){
+   case "lang":S.lang=v;render();break;
+   case "tab":S.tab=v;render();break;
+   case "guest":S.logged=true;S.user.name=t("guestName");if(!S.plan)S.plan="sprint";go("today");break;
+   case "plan":{const first=!S.plan;S.plan=v;toast(t("tPlan",{p:t(v==="free"?"free":v==="sprint"?"sprint":"monthly")}));go(first?"setup":"today");break;}
+   case "vr":S.vr=!S.vr;if(!S.vr&&S.sel.mode==="VR")S.sel.mode="Webcam";render();toast(S.vr?t("tVrOn"):t("tVrOff"));break;
+   case "nodate":S.user.date=null;go("today");break;
+   case "usector":S.user.sector=v;S.user.past=S.user.past.filter(s=>s!==v);render();break;
+   case "past":S.user.past=S.user.past.includes(v)?S.user.past.filter(s=>s!==v):S.user.past.concat([v]);render();break;
+   case "ulang":S.user.language=v;render();break;
+   case "sel":S.sel[a.dataset.k]=v;render();break;
+   case "pick":S.sel.sc=v;S.sel.language=S.user.language;if(!prUnlocked(S.sel.pr))S.sel.pr="calm";go(a.dataset.next||"scenarios");break;
+   case "open":S.cur=v;go("debrief");break;
+   case "filter":S.filter=v;render();break;
+   case "again":{const s=S.ss.find(x=>x.id===v);Object.assign(S.sel,{sc:s.sc,pr:s.pr,language:s.language,mode:S.vr?s.mode:"Webcam"});go("brief");break;}
+   case "sim":simulate();break;
+   case "logout":S.logged=false;S.tab="login";render();break;
+   case "reset":{const k=S.logged,l=S.lang;S=fresh(l);if(k){S.logged=true;S.plan="sprint";S.route="today";}lastRoute=null;render();toast(t("tReset"));break;}
+  }
+});
+document.addEventListener("input",e=>{
+  const el=e.target;
+  if(el.dataset.range==="nb"){S.nb=+el.value;const o=$("#nbv");if(o)o.firstChild.nodeValue=el.value;save();}
+  if(el.dataset.range==="na"){const s=S.ss.find(x=>x.id===el.dataset.id);if(s){s.na=+el.value;save();}}
+  if(el.dataset.note){const s=S.ss.find(x=>x.id===el.dataset.note);if(s){s.note=el.value;save();}}
+});
+document.addEventListener("change",e=>{if(e.target.dataset.range==="na")render();});
+document.addEventListener("submit",e=>{
+  e.preventDefault();const id=e.target.id;
+  if(id==="auth"){const n=$("#a-n"),m=$("#a-e");if(n&&n.value.trim())S.user.name=n.value.trim();if(m&&m.value.trim())S.user.email=m.value.trim();S.logged=true;if(S.tab==="signup"){S.plan=null;go("plans");}else{if(!S.plan)S.plan="sprint";go("today");}}
+  if(id==="setup"){S.user.date=$("#u-d").value||null;S.user.role=$("#u-r").value.trim()||S.user.role;S.user.company=$("#u-c").value.trim();go("today");}
+  if(id==="prof"){S.user.name=$("#p-n").value.trim()||S.user.name;S.user.role=$("#p-r").value.trim()||S.user.role;S.user.company=$("#p-c").value.trim();S.user.date=$("#p-d").value||null;render();toast(t("tSaved"));}
+});
+render();
+</script>
+</body>
+</html>
