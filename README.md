@@ -31,7 +31,7 @@ No build step and no dependencies. Open `index.html` in a browser.
 
 ## Publish with GitHub Pages
 
-1. Create a new repository on GitHub and upload all files in this folder (keep the `assets` folder).
+1. Create a new repository on GitHub and upload `index.html` (and this README).
 2. Go to **Settings → Pages**.
 3. Under **Build and deployment**, choose **Deploy from a branch**, branch `main`, folder `/ (root)`, and save.
 4. After a minute the site is live at `https://<your-user>.github.io/<repository-name>/`.
@@ -39,10 +39,9 @@ No build step and no dependencies. Open `index.html` in a browser.
 ## Structure
 
 ```
-index.html                      the whole app (HTML, CSS and JavaScript)
-assets/simulation-wizard-logo.png
-assets/fonts/                   Barlow and Barlow Semi Condensed (SIL Open Font License)
-.nojekyll                       tells GitHub Pages to serve files as they are
+index.html    the whole app in one file: HTML, CSS, JavaScript,
+              the logo and the Barlow fonts are embedded, so nothing else is needed
+.nojekyll     tells GitHub Pages to serve files as they are
 ```
 
 ## Credits
